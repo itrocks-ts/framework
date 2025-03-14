@@ -57,7 +57,6 @@
 		"@itrocks/translate": "latest",
 		"@itrocks/user": "latest",
 		"@itrocks/uses": "latest",
-		"@itrocks/webstorm": "latest",
 		"@itrocks/xtarget": "latest",
 		"air-datepicker": "^3.5",
 		"autocompleter": "^9.3",
@@ -99,5 +98,5 @@
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' app.js app.d.ts"
 	},
 	"types": "./cjs/framework.d.ts",
-	"version": "0.0.1"
+	"version": "0.0.2"
 }
