@@ -25,6 +25,7 @@ import { initStoreTransformers }   from '@itrocks/core-transformers'
 import { FastifyServer }           from '@itrocks/fastify'
 import { FileStore }               from '@itrocks/fastify-file-session-store'
 import { PROTECT_GET }             from '@itrocks/lazy-loading'
+import { Menu }                    from '@itrocks/menu'
 import { mysqlDependsOn }          from '@itrocks/mysql'
 import { passwordDependsOn }       from '@itrocks/password'
 import { setPasswordTransformers } from '@itrocks/password/transformers'
@@ -50,11 +51,13 @@ import { localDataSource }         from '../../../../local/data-source'
 import { localSecret }             from '../../../../local/secret'
 import { localSession }            from '../../../../local/session'
 import { accessConfig }            from './access'
+import { menuConfig }              from './menu'
 import { Template }                from './template'
 
 type ActionObject   = Record<string, ActionFunction>
 type ActionFunction = (request: Request) => Promise<Response>
 
+const menu = new Menu(menuConfig)
 let routes: Routes
 
 frontScripts.push(
@@ -156,6 +159,7 @@ function bindDependencies()
 		const containerData = {
 			action:  request.action,
 			actions: this.actions,
+			menu,
 			request,
 			session: request.request.session
 		}
