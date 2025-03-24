@@ -177,15 +177,15 @@ function bindDependencies()
 function buildWorkflow()
 {
 	setActionCss(
-		{ css: '/node_modules/@itrocks/(action)/css/action.css' }
+		{ file: '/node_modules/@itrocks/(action)/css/action.css' }
 	)
 	setActionTemplates(
-		{ need: 'object', template: __dirname + '/../../action/cjs/selectionAction.html' },
-		{ template: __dirname + '/../../action/cjs/action.html' }
+		{ need: 'object', file: __dirname + '/../../action/cjs/selectionAction.html' },
+		{ file: __dirname + '/../../action/cjs/action.html' }
 	)
 	setAction('edit',   'delete')
 	setAction('login',  'forgot-password')
-	setAction('login',  'sign-up')
+	setAction('login',  'signup', { caption: 'Sign up' })
 	setAction('list',   'new')
 	setAction('list',   'delete', { need: 'object' })
 	setAction('output', 'edit')
