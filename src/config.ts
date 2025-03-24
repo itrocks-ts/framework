@@ -7,7 +7,18 @@ function mergeConfigObject(config: Config, mergeConfig: Config)
 {
 	Object.entries(mergeConfig).forEach(([key, value]) => {
 		if (config[key]) {
-			mergeConfigObject(config[key], value)
+			if (Array.isArray(value)) {
+				if (!Array.isArray(config[key])) {
+					config[key] = [config[key]]
+				}
+				config[key].push(...value)
+			}
+			else if (Array.isArray(config[key])) {
+				config[key].push(value)
+			}
+			else {
+				mergeConfigObject(config[key], value)
+			}
 		}
 		else {
 			config[key] = value
