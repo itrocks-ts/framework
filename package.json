@@ -98,5 +98,5 @@
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' app.js app.d.ts"
 	},
 	"types": "./cjs/framework.d.ts",
-	"version": "0.0.8"
+	"version": "0.0.9"
 }
