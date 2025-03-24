@@ -1,5 +1,5 @@
 import { translations } from '@itrocks/translate'
-import Template         from '../template'
+import { Template }     from '../cjs/template'
 
 class TemplateMockTranslate extends Template
 {

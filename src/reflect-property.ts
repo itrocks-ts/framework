@@ -2,10 +2,9 @@ import { HtmlContainer }         from '@itrocks/core-transformers'
 import { ReflectProperty as RP } from '@itrocks/reflect'
 import { applyTransformer }      from '@itrocks/transformer'
 import { EDIT, HTML, OUTPUT }    from '@itrocks/transformer'
-import { ReflectClass }          from './class'
+import { ReflectClass }          from './reflect-class'
 
-export { ReflectProperty }
-export default class ReflectProperty<T extends object> extends RP<T>
+export class ReflectProperty<T extends object> extends RP<T>
 {
 
 	get class()

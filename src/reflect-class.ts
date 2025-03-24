@@ -1,10 +1,9 @@
 import { PropertyTypes }      from '@itrocks/property-type'
 import { ReflectClass as RC } from '@itrocks/reflect'
 import { usesOf }             from '@itrocks/uses'
-import { ReflectProperty }    from './property'
+import { ReflectProperty }    from './reflect-property'
 
-export { ReflectClass }
-export default class ReflectClass<T extends object = object> extends RC<T>
+export class ReflectClass<T extends object = object> extends RC<T>
 {
 
 	inheritedPropertyTypes(propertyTypes: PropertyTypes<T>): void

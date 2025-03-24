@@ -1,4 +1,4 @@
-import Template from '../template'
+import { Template } from '../cjs/template'
 
 describe('translation', () => {
 	const template = new Template
