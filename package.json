@@ -48,7 +48,7 @@
 		"@itrocks/rename": "latest",
 		"@itrocks/request-response": "latest",
 		"@itrocks/save": "latest",
-		"@itrocks/sign-up": "latest",
+		"@itrocks/signup": "latest",
 		"@itrocks/sql-functions": "latest",
 		"@itrocks/summary": "latest",
 		"@itrocks/table": "latest",
@@ -98,5 +98,5 @@
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' app.js app.d.ts"
 	},
 	"types": "./cjs/framework.d.ts",
-	"version": "0.0.5"
+	"version": "0.0.6"
 }
