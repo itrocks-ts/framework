@@ -19,5 +19,4 @@ export function mergeConfig(config: Config, appConfigFile: string)
 {
 	if (!existsSync(appDir + appConfigFile)) return
 	mergeConfigObject(config, Object.values(require(appDir + appConfigFile))[0] as Config)
-	console.log('Merged config', config)
 }
