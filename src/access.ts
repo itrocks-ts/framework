@@ -6,7 +6,7 @@ export const accessConfig: Record<string, any> =
 		'/user/authenticate',
 		'/user/forgot-password',
 		'/user/login',
-		'/user/register'
+		'/user/sign-up'
 	]
 }
 
