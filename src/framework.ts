@@ -61,10 +61,8 @@ const menu = new Menu(menuConfig)
 let routes: Routes
 
 frontScripts.push(
-	'/node_modules/air-datepicker/air-datepicker.js',
 	'/node_modules/air-datepicker/locale/en.js',
-	'/node_modules/air-datepicker/locale/fr.js',
-	'/node_modules/autocompleter/autocomplete.es.js'
+	'/node_modules/air-datepicker/locale/fr.js'
 )
 
 function bindDependencies()
@@ -215,12 +213,13 @@ export async function main()
 	actionRequestDependsOn({ getModule: routes.resolve.bind(routes) })
 
 	return new FastifyServer({
-		assetPath: appDir,
-		execute:   request => execute(new Request(request)),
-		favicon:   '/node_modules/@itrocks/framework/favicon.ico',
+		assetPath:   appDir,
+		execute:     request => execute(new Request(request)),
+		favicon:     '/node_modules/@itrocks/framework/favicon.ico',
 		frontScripts,
-		port:      3000,
-		secret:    localSecret,
-		store:     new FileStore(localSession.path)
+		port:        3000,
+		scriptCalls: ['loadCss', 'loadScript'],
+		secret:      localSecret,
+		store:       new FileStore(localSession.path)
 	}).run()
 }
