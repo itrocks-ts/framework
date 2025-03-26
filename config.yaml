@@ -1,0 +1,19 @@
+access:
+  free:
+    - /user/authenticate
+    - /user/forgot-password
+    - /user/login
+    - /user/signup
+
+compose:
+  '@itrocks/reflect:ReflectClass':    '@itrocks/framework:ReflectClass'
+  '@itrocks/reflect:ReflectProperty': '@itrocks/framework:ReflectProperty'
+
+container: /node_modules/@itrocks/home/cjs/container.html
+
+menu:
+  Administration:
+    /user: Users
+
+session:
+  path: /session
