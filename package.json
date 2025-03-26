@@ -63,6 +63,7 @@
 	},
 	"exports": "./cjs/framework.js",
 	"files": [
+		"config.yaml",
 		"favicon.ico",
 		"LICENSE",
 		"README.md",
@@ -93,5 +94,5 @@
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' app.js app.d.ts"
 	},
 	"types": "./cjs/framework.d.ts",
-	"version": "0.0.15"
+	"version": "0.0.16"
 }
