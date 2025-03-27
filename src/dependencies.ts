@@ -32,9 +32,9 @@ import { storeOf }                 from '@itrocks/store'
 import { applyTransformer }        from '@itrocks/transformer'
 import { IGNORE }                  from '@itrocks/transformer'
 import { READ, SAVE, SQL }         from '@itrocks/transformer'
-import { tr, trInit }              from '@itrocks/translate'
+import { tr, trInit, trLoad }      from '@itrocks/translate'
 import { format, parse }           from 'date-fns'
-import { join, normalize }         from 'node:path'
+import { join }                    from 'node:path'
 import { Template }                from './template'
 
 const menu = new Menu(config.menu)
@@ -91,7 +91,10 @@ export function bind()
 		toStoreName:     toColumn
 	})
 
-	trInit('fr-FR', normalize(join(__dirname, '..', 'fr-FR.csv')))
+	trInit('fr-FR')
+	trLoad(join(__dirname, '..', 'fr-FR.csv'))
+	trLoad(join(appDir, 'app', 'fr-FR.csv')).catch()
+	trLoad(join(appDir, 'fr-FR.csv')).catch()
 
 	Action.prototype.htmlTemplateResponse = async function(
 		data: any, request: Request, templateFile: string, statusCode = 200, headers: Headers = {}
