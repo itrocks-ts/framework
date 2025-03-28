@@ -100,12 +100,12 @@ export function bind()
 		data: any, request: Request, templateFile: string, statusCode = 200, headers: Headers = {}
 	) {
 		const containerData = {
-			action:  request.action,
-			actions: this.actions,
+			action: request.action,
 			menu,
 			request,
 			session: request.request.session
 		}
+		Object.assign(containerData, this)
 		const template = new Template(data, containerData)
 		template.included = (request.request.headers['sec-fetch-dest'] === 'empty')
 		return this.htmlResponse(
