@@ -25,7 +25,7 @@ export class ReflectClass<T extends object = object> extends RC<T>
 	get properties()
 	{
 		const properties = super.properties
-		for (const reflectProperty of Object.values(properties) as ReflectProperty<T>[]) {
+		for (const reflectProperty of properties) {
 			Object.setPrototypeOf(reflectProperty, ReflectProperty.prototype)
 		}
 		return properties
