@@ -34,7 +34,7 @@ export class ReflectClass<T extends object = object> extends RC<T>
 	get uses()
 	{
 		const value = usesOf(this.type)
-		Object.defineProperty(this, 'uses', { value })
+		Object.defineProperty(this, 'uses', { configurable: true, enumerable: false, value, writable: true })
 		return value
 	}
 

@@ -21,6 +21,7 @@ import { passwordDependsOn }       from '@itrocks/password'
 import { setPasswordTransformers } from '@itrocks/password/transformers'
 import { displayOf }               from '@itrocks/property-view'
 import { toColumn }                from '@itrocks/rename'
+import { toCssId, toField }        from '@itrocks/rename'
 import { Headers }                 from '@itrocks/request-response'
 import { requiredOf }              from '@itrocks/required'
 import { routeDependsOn }          from '@itrocks/route'
@@ -50,6 +51,8 @@ export function bind()
 
 	initCoreTransformers({
 		displayOf,
+		fieldIdOf:              toCssId,
+		fieldNameOf:            toField,
 		formatDate:             date => format(date, tr('dd/MM/yyyy', { ucFirst: false })),
 		ignoreTransformedValue: IGNORE,
 		parseDate:              date => parse(date, tr('dd/MM/yyyy', { ucFirst: false }), new Date),
