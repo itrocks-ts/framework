@@ -22,7 +22,7 @@ let selector: string
 
 selector = 'input[data-type=object], ul[data-type=objects] > li > input'
 build<HTMLInputElement>(selector, async input =>
-	(await import('../../../autocompleter/autocompleter.js')).autoCompleter(input)
+	new (await import('../../../autocomplete/autocomplete.js')).AutoComplete(input)
 )
 
 build<HTMLHeadingElement>('main > * > h2, main > * > header > h2', breadcrumb)

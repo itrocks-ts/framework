@@ -10,7 +10,7 @@
 		"@itrocks/asset-loader": "latest",
 		"@itrocks/auto-focus": "latest",
 		"@itrocks/auto-redirect": "latest",
-		"@itrocks/autocompleter": "latest",
+		"@itrocks/autocomplete": "latest",
 		"@itrocks/breadcrumb": "latest",
 		"@itrocks/build": "latest",
 		"@itrocks/business-pack": "latest",
@@ -54,7 +54,6 @@
 		"@itrocks/uses": "latest",
 		"@itrocks/xtarget": "latest",
 		"air-datepicker": "^3.5",
-		"autocompleter": "^9.3",
 		"date-fns": "^4.1"
 	},
 	"description": "RAD framework for intuitive web application development, blending data and domain-driven design with modular architecture",
@@ -94,5 +93,5 @@
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' app.js app.d.ts"
 	},
 	"types": "./cjs/framework.d.ts",
-	"version": "0.0.22"
+	"version": "0.0.23"
 }
