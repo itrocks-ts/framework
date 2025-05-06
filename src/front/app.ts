@@ -1,5 +1,6 @@
 import { build }                 from '../../../build/build.js'
 import { buildXTarget }          from '../../../xtarget/build.js'
+import { loadCss }               from '../../../asset-loader/asset-loader.js'
 import { XTargetBeginEnd }       from '../../../xtarget/begin-end.js'
 import { XTargetComposite }      from '../../../xtarget/composite.js'
 import { XTargetDefaultTarget }  from '../../../xtarget/default-target.js'
@@ -21,9 +22,11 @@ import                                '../../../real-viewport-height/real-viewpo
 let selector: string
 
 selector = 'input[data-type=object], ul[data-type=objects] > li > input'
-build<HTMLInputElement>(selector, async input =>
-	new (await import('../../../autocomplete/autocomplete.js')).AutoComplete(input)
-)
+build<HTMLInputElement>(selector, async input => {
+	input.closest<HTMLLIElement>('li')?.classList.add('combobox')
+	loadCss('/node_modules/@itrocks/autocomplete/autocomplete.css')
+	return new (await import('../../../autocomplete/autocomplete.js')).AutoComplete(input)
+})
 
 build<HTMLHeadingElement>('main > * > h2, main > * > header > h2', breadcrumb)
 
