@@ -95,7 +95,7 @@ export function bind()
 	})
 
 	trInit('fr-FR')
-	trLoad(join(__dirname, '..', 'fr-FR.csv'))
+	trLoad(join(__dirname, '..', 'fr-FR.csv')).catch()
 	trLoad(join(appDir, 'app', 'fr-FR.csv')).catch()
 	trLoad(join(appDir, 'fr-FR.csv')).catch()
 
