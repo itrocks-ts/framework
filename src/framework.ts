@@ -9,7 +9,7 @@ export { ReflectProperty } from './reflect-property'
 
 scanConfigFiles().then(() => {
 	compose(__dirname, config.compose)
+	require('@itrocks/default-action-workflow').build()
 	require('./dependencies').bind()
-	require('./workflow').build()
 	require('./main').run()
 })
