@@ -30,13 +30,13 @@ import { SqlFunction }             from '@itrocks/sql-functions'
 import { createDataSource }        from '@itrocks/storage'
 import { storeDependsOn }          from '@itrocks/store'
 import { storeOf }                 from '@itrocks/store'
+import { Template }                from '@itrocks/template-insight'
 import { applyTransformer }        from '@itrocks/transformer'
 import { IGNORE }                  from '@itrocks/transformer'
 import { READ, SAVE, SQL }         from '@itrocks/transformer'
 import { tr, trInit, trLoad }      from '@itrocks/translate'
 import { format, parse }           from 'date-fns'
 import { join }                    from 'node:path'
-import { Template }                from './template'
 
 const menu = new Menu(config.menu)
 
