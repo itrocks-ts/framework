@@ -59,7 +59,7 @@
 	},
 	"description": "RAD framework for intuitive web application development, blending data and domain-driven design with modular architecture",
 	"devDependencies": {
-		"typescript": "^5.6"
+		"typescript": "~5.8"
 	},
 	"exports": "./cjs/framework.js",
 	"files": [
@@ -94,5 +94,5 @@
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' app.js app.d.ts"
 	},
 	"types": "./cjs/framework.d.ts",
-	"version": "0.0.27"
+	"version": "0.0.28"
 }
