@@ -27,6 +27,7 @@
 		"@itrocks/config": "latest",
 		"@itrocks/crud-pack": "latest",
 		"@itrocks/decorator": "latest",
+		"@itrocks/default-action-workflow": "latest",
 		"@itrocks/domain-components": "latest",
 		"@itrocks/fastify": "latest",
 		"@itrocks/fastify-file-session-store": "latest",
@@ -94,5 +95,5 @@
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' app.js app.d.ts"
 	},
 	"types": "./cjs/framework.d.ts",
-	"version": "0.0.28"
+	"version": "0.0.29"
 }
