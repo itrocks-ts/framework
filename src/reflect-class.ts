@@ -6,7 +6,7 @@ import { ReflectProperty }    from './reflect-property'
 export class ReflectClass<T extends object = object> extends RC<T>
 {
 
-	inheritedPropertyTypes(propertyTypes: PropertyTypes<T>): void
+	inheritedPropertyTypes(propertyTypes: PropertyTypes): void
 	{
 		super.inheritedPropertyTypes(propertyTypes)
 		for (const uses of this.uses) {
