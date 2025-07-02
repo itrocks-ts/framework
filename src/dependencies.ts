@@ -15,6 +15,7 @@ import { config }                  from '@itrocks/config'
 import { initCoreTransformers }    from '@itrocks/core-transformers'
 import { initStoreTransformers }   from '@itrocks/core-transformers'
 import { PROTECT_GET }             from '@itrocks/lazy-loading'
+import { initListProperties }      from '@itrocks/list-properties'
 import { Menu }                    from '@itrocks/menu'
 import { mysqlDependsOn }          from '@itrocks/mysql'
 import { passwordDependsOn }       from '@itrocks/password'
@@ -60,6 +61,8 @@ export function bind()
 		routeOf,
 		tr
 	})
+
+	initListProperties()
 
 	mysqlDependsOn({
 		applyReadTransformer: async function(data, property, object) {
