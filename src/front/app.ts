@@ -1,7 +1,15 @@
-import { build }                 from '../../../build/build.js'
-import { buildXTarget }          from '../../../xtarget/build.js'
 import { loadCss }               from '../../../asset-loader/asset-loader.js'
+import { autoFocus }             from '../../../auto-focus/auto-focus.js'
+import                                '../../../auto-redirect/build.js'
+import { breadcrumb }            from '../../../breadcrumb/breadcrumb.js'
+import { build }                 from '../../../build/build.js'
+import { collapse }              from '../../../collapse/collapse.js'
+import { containedAutoWidth }    from '../../../contained-auto-width/contained-auto-width.js'
+import { notification }          from '../../../notifications/notifications.js'
+import { notifications }         from '../../../notifications/notifications.js'
+import                                '../../../real-viewport-height/real-viewport-height.js'
 import { XTargetBeginEnd }       from '../../../xtarget/begin-end.js'
+import { buildXTarget }          from '../../../xtarget/build.js'
 import { XTargetComposite }      from '../../../xtarget/composite.js'
 import { XTargetDefaultTarget }  from '../../../xtarget/default-target.js'
 import { XTargetHead }           from '../../../xtarget/head.js'
@@ -10,14 +18,6 @@ import { XTargetHistory }        from '../../../xtarget/history.js'
 import { XTargetMainTarget }     from '../../../xtarget/main-target.js'
 import { XTargetModifier }       from '../../../xtarget/modifier.js'
 import { XTargetDefaultOptions } from '../../../xtarget/xtarget.js'
-import { autoFocus }             from '../../../auto-focus/auto-focus.js'
-import                                '../../../auto-redirect/build.js'
-import { breadcrumb }            from '../../../breadcrumb/breadcrumb.js'
-import { collapse }              from '../../../collapse/collapse.js'
-import { containedAutoWidth }    from '../../../contained-auto-width/contained-auto-width.js'
-import { notification }          from '../../../notifications/notifications.js'
-import { notifications }         from '../../../notifications/notifications.js'
-import                                '../../../real-viewport-height/real-viewport-height.js'
 
 let selector: string
 
@@ -31,6 +31,10 @@ build<HTMLInputElement>(selector, async input => {
 build<HTMLHeadingElement>('main > * > h2, main > * > header > h2', breadcrumb)
 
 build<HTMLButtonElement>('button.collapse', button => collapse(button, 'body'))
+
+build<HTMLInputElement>('ul[data-type=objects] > .combobox > input:not([type=hidden])', async input =>
+	(await import('../../../links/links.js')).links(input)
+)
 
 build<HTMLInputElement>('input[data-type=date]', async input =>
 	(await import('../../../air-datepicker/air-datepicker.js')).airDatePicker(input)
