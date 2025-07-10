@@ -21,7 +21,7 @@ import { XTargetDefaultOptions } from '../../../xtarget/xtarget.js'
 
 let selector: string
 
-selector = 'input[data-type=object], ul[data-type=objects] > li > input'
+selector = 'input[data-type=object], ul[data-type=objects] > li > input:not([type=hidden])'
 build<HTMLInputElement>(selector, async input => {
 	input.closest<HTMLLIElement>('li')?.classList.add('combobox')
 	loadCss('/node_modules/@itrocks/autocomplete/autocomplete.css')
