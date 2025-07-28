@@ -14,6 +14,7 @@ import { componentOf }             from '@itrocks/composition'
 import { config }                  from '@itrocks/config'
 import { initCoreTransformers }    from '@itrocks/core-transformers'
 import { initStoreTransformers }   from '@itrocks/core-transformers'
+import { initFileTransformers }    from '@itrocks/file'
 import { PROTECT_GET }             from '@itrocks/lazy-loading'
 import { initListProperties }      from '@itrocks/list-properties'
 import { Menu }                    from '@itrocks/menu'
@@ -61,6 +62,8 @@ export function bind()
 		routeOf,
 		tr
 	})
+
+	initFileTransformers()
 
 	initListProperties()
 

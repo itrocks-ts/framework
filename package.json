@@ -31,6 +31,7 @@
 		"@itrocks/domain-components": "latest",
 		"@itrocks/fastify": "latest",
 		"@itrocks/fastify-file-session-store": "latest",
+		"@itrocks/file": "latest",
 		"@itrocks/forgot-password": "latest",
 		"@itrocks/home": "latest",
 		"@itrocks/lazy-loading": "latest",
@@ -96,5 +97,5 @@
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' *.js *.d.ts"
 	},
 	"types": "./cjs/framework.d.ts",
-	"version": "0.0.33"
+	"version": "0.0.34"
 }
