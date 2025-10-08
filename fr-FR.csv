@@ -29,6 +29,7 @@ edit $1;modifier $1
 email;mail
 en;fr
 false;faux
+file;fichier
 forgot password;mot de passe oublié
 global search;recherche globale
 home;accueil
