@@ -22,6 +22,7 @@ import { mysqlDependsOn }          from '@itrocks/mysql'
 import { passwordDependsOn }       from '@itrocks/password'
 import { setPasswordTransformers } from '@itrocks/password/transformers'
 import { displayOf }               from '@itrocks/property-view'
+import { initOrderedProperties }   from '@itrocks/property-view'
 import { toColumn }                from '@itrocks/rename'
 import { toCssId, toField }        from '@itrocks/rename'
 import { Headers }                 from '@itrocks/request-response'
@@ -66,6 +67,8 @@ export function bind()
 	initFileTransformers()
 
 	initListProperties()
+
+	initOrderedProperties()
 
 	mysqlDependsOn({
 		applyReadTransformer: async function(data, property, object) {
