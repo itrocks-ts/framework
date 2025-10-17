@@ -16,6 +16,7 @@
 		"@itrocks/business-pack": "latest",
 		"@itrocks/class-file": "latest",
 		"@itrocks/class-type": "latest",
+		"@itrocks/class-view": "latest",
 		"@itrocks/collapse": "latest",
 		"@itrocks/collection": "latest",
 		"@itrocks/compose": "latest",
@@ -49,6 +50,7 @@
 		"@itrocks/request-response": "latest",
 		"@itrocks/signup": "latest",
 		"@itrocks/sql-functions": "latest",
+		"@itrocks/store": "latest",
 		"@itrocks/table": "latest",
 		"@itrocks/template": "latest",
 		"@itrocks/template-insight": "latest",
@@ -97,5 +99,5 @@
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' *.js *.d.ts"
 	},
 	"types": "./cjs/framework.d.ts",
-	"version": "0.0.36"
+	"version": "0.0.37"
 }
