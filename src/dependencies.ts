@@ -36,6 +36,7 @@ import { SqlFunction }                      from '@itrocks/sql-functions'
 import { createDataSource }                 from '@itrocks/storage'
 import { storeDependsOn }                   from '@itrocks/store'
 import { storeOf }                          from '@itrocks/store'
+import { templateDependsOn }                from '@itrocks/template'
 import { Template }                         from '@itrocks/template-insight'
 import { applyTransformer }                 from '@itrocks/transformer'
 import { HTML, IGNORE }                     from '@itrocks/transformer'
@@ -114,6 +115,12 @@ export function bind()
 
 	propertyTranslateDependsOn({
 		setTransformers: setPropertyTranslateTransformers
+	})
+
+	templateDependsOn({
+		toString: async data => (((typeof data)[0] === 'o') && (data.toString === Object.prototype.toString))
+			? (await require('@itrocks/class-view').representativeValueOf(data))
+			: '' + data
 	})
 
 	trInit('fr-FR')
