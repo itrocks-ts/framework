@@ -50,7 +50,6 @@
 		"@itrocks/template-insight": "latest",
 		"@itrocks/transformer": "latest",
 		"@itrocks/translate": "latest",
-		"@itrocks/user": "latest",
 		"@itrocks/xtarget": "latest",
 		"air-datepicker": "^3.5",
 		"date-fns": "^4.1"
@@ -92,5 +91,5 @@
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' *.js *.d.ts"
 	},
 	"types": "./cjs/framework.d.ts",
-	"version": "0.0.44"
+	"version": "0.0.45"
 }
