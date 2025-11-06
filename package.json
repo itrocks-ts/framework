@@ -29,15 +29,12 @@
 		"@itrocks/crud-pack": "latest",
 		"@itrocks/decorator": "latest",
 		"@itrocks/default-action-workflow": "latest",
-		"@itrocks/domain-components": "latest",
 		"@itrocks/fastify": "latest",
 		"@itrocks/fastify-file-session-store": "latest",
 		"@itrocks/file": "latest",
 		"@itrocks/forgot-password": "latest",
-		"@itrocks/former-name": "latest",
 		"@itrocks/home": "latest",
 		"@itrocks/lazy-loading": "latest",
-		"@itrocks/length": "latest",
 		"@itrocks/links": "latest",
 		"@itrocks/list-properties": "latest",
 		"@itrocks/modal": "latest",
@@ -45,10 +42,8 @@
 		"@itrocks/notifications": "latest",
 		"@itrocks/password": "latest",
 		"@itrocks/print": "latest",
-		"@itrocks/property-translate": "latest",
 		"@itrocks/property-type": "latest",
 		"@itrocks/property-view": "latest",
-		"@itrocks/range": "latest",
 		"@itrocks/real-viewport-height": "latest",
 		"@itrocks/reflect": "latest",
 		"@itrocks/rename": "latest",
@@ -61,7 +56,6 @@
 		"@itrocks/template-insight": "latest",
 		"@itrocks/transformer": "latest",
 		"@itrocks/translate": "latest",
-		"@itrocks/unit": "latest",
 		"@itrocks/user": "latest",
 		"@itrocks/uses": "latest",
 		"@itrocks/xtarget": "latest",
@@ -105,5 +99,5 @@
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' *.js *.d.ts"
 	},
 	"types": "./cjs/framework.d.ts",
-	"version": "0.0.41"
+	"version": "0.0.42"
 }
