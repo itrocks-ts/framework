@@ -36,6 +36,7 @@
 		"@itrocks/forgot-password": "latest",
 		"@itrocks/home": "latest",
 		"@itrocks/lazy-loading": "latest",
+		"@itrocks/links": "latest",
 		"@itrocks/list-properties": "latest",
 		"@itrocks/modal": "latest",
 		"@itrocks/mysql": "latest",
@@ -100,5 +101,5 @@
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' *.js *.d.ts"
 	},
 	"types": "./cjs/framework.d.ts",
-	"version": "0.0.39"
+	"version": "0.0.40"
 }
