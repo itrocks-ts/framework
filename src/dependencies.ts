@@ -1,4 +1,3 @@
-
 import { initLazyLoading } from '@itrocks/lazy-loading'
 initLazyLoading()
 

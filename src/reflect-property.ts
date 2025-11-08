@@ -12,14 +12,14 @@ export class ReflectProperty<T extends object> extends RP<T>
 		return Object.setPrototypeOf(super.class, ReflectClass.prototype)
 	}
 
-	async edit(format: string = HTML): Promise<string>
+	async edit(format: string = HTML): Promise<any>
 	{
 		const object = this.object ?? this.class.type
 		const value  = this.object ? this.object[this.name] : undefined
 		return applyTransformer<T>(await value, object, this.name, format, EDIT)
 	}
 
-	async output(format: string = HTML, askFor?: HtmlContainer): Promise<string>
+	async output(format: string = HTML, askFor?: HtmlContainer): Promise<any>
 	{
 		const object = this.object ?? this.class.type
 		const value  = this.object ? await this.object[this.name] : undefined
