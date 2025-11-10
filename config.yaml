@@ -2,9 +2,5 @@ compose:
   '@itrocks/reflect:ReflectClass':    '@itrocks/framework:ReflectClass'
   '@itrocks/reflect:ReflectProperty': '@itrocks/framework:ReflectProperty'
 
-menu:
-  Administration:
-    /user: Users
-
 session:
   path: /session
