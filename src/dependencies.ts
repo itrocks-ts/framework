@@ -134,13 +134,15 @@ export function bind()
 			action: request.action,
 			menu,
 			request,
-			session: request.request.session
+			scripts:     config.container.scripts,
+			session:     request.request.session,
+			styleSheets: config.container.styleSheets,
 		}
 		Object.assign(containerData, this)
 		const template = new Template(data, containerData)
 		template.included = (request.request.headers['sec-fetch-dest'] === 'empty')
 		return this.htmlResponse(
-			await template.parseFile(templateFile, join(appDir, config.container)),
+			await template.parseFile(templateFile, join(appDir, config.container.file)),
 			statusCode,
 			headers
 		)

@@ -1,3 +1,4 @@
+import { KeyOf }              from '@itrocks/class-type'
 import { PropertyTypes }      from '@itrocks/property-type'
 import { ReflectClass as RC } from '@itrocks/reflect'
 import { usesOf }             from '@itrocks/uses'
@@ -29,6 +30,11 @@ export class ReflectClass<T extends object = object> extends RC<T>
 			Object.setPrototypeOf(reflectProperty, ReflectProperty.prototype)
 		}
 		return properties
+	}
+
+	property(name: KeyOf<T>)
+	{
+		return new ReflectProperty(this, name)
 	}
 
 	get uses()
