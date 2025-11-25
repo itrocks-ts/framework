@@ -140,7 +140,7 @@ export function bind()
 		}
 		Object.assign(containerData, this)
 		const template = new Template(data, containerData)
-		template.included = (request.request.headers['sec-fetch-dest'] === 'empty')
+		template.included = !!request.request.headers['xhr-info']
 		return this.htmlResponse(
 			await template.parseFile(templateFile, join(appDir, config.container.file)),
 			statusCode,
