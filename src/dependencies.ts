@@ -88,7 +88,9 @@ export function bind()
 			return value
 		},
 		applySaveTransformer: async function(object, property, data) {
-			const value = Reflect.getMetadata(PROTECT_GET, object, property) ? undefined : await object[property]
+			const value = Reflect.getMetadata(PROTECT_GET, object, property)
+				? (Object.hasOwn(object, property) ? object[property] : undefined)
+				: await object[property]
 			return applyTransformer(value, object, property, SQL, SAVE, data)
 		},
 		columnOf:               toColumn,
