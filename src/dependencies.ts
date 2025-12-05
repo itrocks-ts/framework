@@ -141,10 +141,10 @@ export function bind()
 			styleSheets: config.container.styleSheets,
 		}
 		Object.assign(containerData, this)
-		const template = new Template(data, containerData)
-		template.included = !!request.request.headers['xhr-info']
+		const contained = !request.request.headers['xhr-info']
+		const template  = new Template(data, containerData)
 		return this.htmlResponse(
-			await template.parseFile(templateFile, join(appDir, config.container.file)),
+			await template.parseFile(templateFile, contained && join(appDir, config.container.file)),
 			statusCode,
 			headers
 		)
