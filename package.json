@@ -51,12 +51,12 @@
 		"@itrocks/transformer": "latest",
 		"@itrocks/translate": "latest",
 		"@itrocks/xtarget": "latest",
-		"air-datepicker": "^3.5",
+		"air-datepicker": "^3.6",
 		"date-fns": "^4.1"
 	},
 	"description": "RAD framework for intuitive web application development, blending data and domain-driven design with modular architecture",
 	"devDependencies": {
-		"typescript": "~5.8"
+		"typescript": "~5.9"
 	},
 	"exports": "./cjs/framework.js",
 	"files": [
@@ -91,5 +91,5 @@
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' *.js *.d.ts"
 	},
 	"types": "./cjs/framework.d.ts",
-	"version": "0.1.3"
+	"version": "0.1.4"
 }
