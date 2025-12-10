@@ -10,14 +10,16 @@ import { notifications }         from '../../../notifications/notifications.js'
 import                                '../../../real-viewport-height/real-viewport-height.js'
 import { XTargetBeginEnd }       from '../../../xtarget/begin-end.js'
 import { buildXTarget }          from '../../../xtarget/build.js'
+import { XTargetSecureClick }    from '../../../xtarget/secure-click.js'
 import { XTargetComposite }      from '../../../xtarget/composite.js'
 import { XTargetDefaultTarget }  from '../../../xtarget/default-target.js'
+import { XTargetDefaultOptions } from '../../../xtarget/xtarget.js'
 import { XTargetHead }           from '../../../xtarget/head.js'
 import { XTargetHeadersSize }    from '../../../xtarget/headers-size.js'
 import { XTargetHistory }        from '../../../xtarget/history.js'
+import { XTargetHoldOn }         from '../../../xtarget/hold-on.js'
 import { XTargetMainTarget }     from '../../../xtarget/main-target.js'
 import { XTargetModifier }       from '../../../xtarget/modifier.js'
-import { XTargetDefaultOptions } from '../../../xtarget/xtarget.js'
 
 let selector: string
 
@@ -49,7 +51,7 @@ build<HTMLElement>('#notifications > li', notification)
 build<HTMLOListElement>('#notifications', notifications)
 
 XTargetDefaultOptions({ plugins: [
-	XTargetBeginEnd, XTargetComposite, XTargetDefaultTarget, XTargetHead, XTargetHeadersSize, XTargetHistory,
-	XTargetMainTarget, XTargetModifier
+	XTargetBeginEnd, XTargetComposite, XTargetDefaultTarget, XTargetHead, XTargetHeadersSize,
+	XTargetHistory, XTargetHoldOn, XTargetMainTarget, XTargetModifier, XTargetSecureClick
 ] })
 buildXTarget()
