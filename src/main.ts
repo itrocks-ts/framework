@@ -74,9 +74,10 @@ export async function run()
 	return new FastifyServer({
 		assetPath:   appDir,
 		execute:     request => execute(new Request(request)),
-		favicon:     config.container?.favicon ?? normalize(join(__dirname, '../favicon.ico')),
+		favicon:     config.container?.favicon ?? normalize(join(__dirname, '../favicon.png')),
 		frontScripts,
 		host:        config.server.host,
+		manifest:    config.container?.manifest,
 		port:        config.server.port,
 		scriptCalls: ['loadCss', 'loadScript'],
 		secret:      config.session.secret ?? config.secret ?? 'defaultSecret',
