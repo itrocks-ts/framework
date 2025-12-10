@@ -75,10 +75,10 @@ export async function run()
 		execute:     request => execute(new Request(request)),
 		favicon:     '/node_modules/@itrocks/framework/favicon.ico',
 		frontScripts,
-		host:        config.host ?? '127.0.0.1',
-		port:        3000,
+		host:        config.server.host ?? '127.0.0.1',
+		port:        config.server.port ?? 3000,
 		scriptCalls: ['loadCss', 'loadScript'],
-		secret:      config.secret,
+		secret:      config.session.secret ?? config.secret ?? 'defaultSecretForTesting',
 		store:       new FileStore(join(appDir, config.session.path))
 	}).run()
 }
