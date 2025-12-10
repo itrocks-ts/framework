@@ -43,6 +43,7 @@ import { OUTPUT, READ, SAVE, SQL }          from '@itrocks/transformer'
 import { tr, trInit, trLoad }               from '@itrocks/translate'
 import { format, parse }                    from 'date-fns'
 import { join }                             from 'node:path'
+import { normalize }                        from 'node:path'
 
 const menu = new Menu(config.menu)
 
@@ -134,14 +135,16 @@ export function bind()
 	) {
 		const containerData = {
 			action: request.action,
+			favicon:     config.container?.favicon  ?? normalize(join(__dirname, '../favicon.ico')),
+			manifest:    config.container?.manifest ? [config.container.manifest] : [],
 			menu,
 			request,
-			scripts:     config.container.scripts,
+			scripts:     config.container?.scripts,
 			session:     request.request.session,
-			styleSheets: config.container.styleSheets,
+			styleSheets: config.container?.styleSheets,
 		}
 		Object.assign(containerData, this)
-		const contained = !request.request.headers['xhr-info']
+		const contained = !request.request.headers['xhr-info'] && config.container?.file
 		const template  = new Template(data, containerData)
 		return this.htmlResponse(
 			await template.parseFile(templateFile, contained && join(appDir, config.container.file)),

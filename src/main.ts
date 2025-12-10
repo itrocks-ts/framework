@@ -11,6 +11,7 @@ import { loadRoutes, routes }     from '@itrocks/route'
 import { storeOf }                from '@itrocks/store'
 import { frontScripts }           from '@itrocks/template'
 import { join }                   from 'node:path'
+import { normalize }              from 'node:path'
 
 type ActionObject   = Record<string, ActionFunction>
 type ActionFunction = (request: Request) => Promise<Response>
@@ -73,12 +74,12 @@ export async function run()
 	return new FastifyServer({
 		assetPath:   appDir,
 		execute:     request => execute(new Request(request)),
-		favicon:     '/node_modules/@itrocks/framework/favicon.ico',
+		favicon:     config.container?.favicon ?? normalize(join(__dirname, '../favicon.ico')),
 		frontScripts,
-		host:        config.server.host ?? '127.0.0.1',
-		port:        config.server.port ?? 3000,
+		host:        config.server.host,
+		port:        config.server.port,
 		scriptCalls: ['loadCss', 'loadScript'],
-		secret:      config.session.secret ?? config.secret ?? 'defaultSecretForTesting',
-		store:       new FileStore(join(appDir, config.session.path))
+		secret:      config.session.secret ?? config.secret ?? 'defaultSecret',
+		store:       new FileStore(normalize(join(appDir, config.session.path)))
 	}).run()
 }
