@@ -24,7 +24,11 @@ frontScripts.push(
 async function execute(request: Request): Promise<Response>
 {
 	// Access control
-	if (!request.request.session.user && !config.access.free.includes(request.route + '/' + request.action)) {
+	if (
+		(config.access?.free !== '*')
+		&& !request.request.session.user
+		&& !config.access?.free?.includes(request.route + '/' + request.action)
+	) {
 		request.action = 'login'
 		request.route  = '/user'
 	}
@@ -58,17 +62,17 @@ async function execute(request: Request): Promise<Response>
 				console.error('Action ' + request.route + '/' + request.action + ' needs at least one object')
 				throw 'Action ' + request.route + '/' + request.action + ' needs at least one '
 			}
-			return action[request.format](request)
+			return toResponse(await action[request.format](request))
 		}
 	}
 
 	// ActionFunction module
-	return module(request)
+	return toResponse(await module(request))
 }
 
 export async function run()
 {
-	await loadRoutes(routes, config.routes)
+	await loadRoutes(routes, config.routes ?? {})
 	actionRequestDependsOn({ getModule: routes.resolve.bind(routes) })
 
 	return new FastifyServer({
@@ -80,7 +84,14 @@ export async function run()
 		manifest:    config.container?.manifest,
 		port:        config.server.port,
 		scriptCalls: ['loadCss', 'loadScript'],
-		secret:      config.session.secret ?? config.secret ?? 'defaultSecret',
+		secret:      config.session.secret ?? config.secret ?? 'defaultSecretHaving32CharactersOrGreater',
 		store:       new FileStore(normalize(join(appDir, config.session.path)))
 	}).run()
+}
+
+function toResponse(mixedResponse: Response | string)
+{
+	return (typeof mixedResponse === 'string')
+		? new Response(mixedResponse)
+		: mixedResponse
 }

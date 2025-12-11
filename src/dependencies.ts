@@ -56,7 +56,9 @@ export function bind()
 
 	classViewDependsOn({ propertyOutput, requiredOf, tr })
 
-	createDataSource(config.dataSource)
+	if (config.dataSource) {
+		createDataSource(config.dataSource)
+	}
 
 	initCollection()
 
