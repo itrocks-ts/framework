@@ -5,6 +5,8 @@ import { Action }                           from '@itrocks/action'
 import { Request }                          from '@itrocks/action-request'
 import { appDir }                           from '@itrocks/app-dir'
 import { fileOf }                           from '@itrocks/class-file'
+import { isAnyFunction }                    from '@itrocks/class-type'
+import { isAnyType }                        from '@itrocks/class-type'
 import { KeyOf }                            from '@itrocks/class-type'
 import { Type }                             from '@itrocks/class-type'
 import { classViewDependsOn }               from '@itrocks/class-view'
@@ -17,7 +19,6 @@ import { initStoreTransformers }            from '@itrocks/core-transformers'
 import { initFileTransformers }             from '@itrocks/file'
 import { PROTECT_GET }                      from '@itrocks/lazy-loading'
 import { initListProperties }               from '@itrocks/list-properties'
-import { Menu }                             from '@itrocks/menu'
 import { mysqlDependsOn }                   from '@itrocks/mysql'
 import { passwordDependsOn }                from '@itrocks/password'
 import { setPasswordTransformers }          from '@itrocks/password/transformers'
@@ -44,8 +45,6 @@ import { tr, trInit, trLoad }               from '@itrocks/translate'
 import { format, parse }                    from 'date-fns'
 import { join }                             from 'node:path'
 import { normalize }                        from 'node:path'
-
-const menu = new Menu(config.menu)
 
 async function propertyOutput<T extends object>(object: T, property: KeyOf<T>): Promise<string>
 {
@@ -133,19 +132,9 @@ export function bind()
 	Action.prototype.htmlTemplateResponse = async function(
 		data: any, request: Request, templateFile: string, statusCode = 200, headers: Headers = {}
 	) {
-		const containerData = {
-			action: request.action,
-			favicon:     config.container?.favicon  ?? normalize(join(__dirname, '../favicon.ico')),
-			manifest:    config.container?.manifest ? [config.container.manifest] : [],
-			menu,
-			request,
-			scripts:     config.container?.scripts,
-			session:     request.request.session,
-			styleSheets: config.container?.styleSheets,
-		}
-		Object.assign(containerData, this)
-		const contained = !request.request.headers['xhr-info'] && config.container?.file
-		const template  = new Template(data, containerData)
+		const containerData = Object.assign(defaultContainerData(request), this)
+		const contained     = !request.request.headers['xhr-info'] && config.container?.file
+		const template      = new Template(data, containerData)
 		return this.htmlResponse(
 			await template.parseFile(templateFile, contained && join(appDir, config.container.file)),
 			statusCode,
@@ -153,4 +142,34 @@ export function bind()
 		)
 	}
 
+}
+
+function configContainerData()
+{
+	const configContainerData = config.container?.data ?? {}
+	for (const [name, value] of Object.entries(configContainerData)) {
+		if ((typeof value === 'string') && '@.'.includes(value[0])) {
+			const exported = value.includes(':')
+				? require(value.split(':')[0])[value.split(':')[1]]
+				: (require(value).default ?? Object.values(require(value))[0])
+			configContainerData[name] =
+				isAnyFunction(exported) ? exported(config[name]) :
+					isAnyType(exported)     ? new exported(config[name]) :
+						exported
+		}
+	}
+	return configContainerData
+}
+
+function defaultContainerData(request: Request)
+{
+	return Object.assign({
+		action:      request.action,
+		favicon:     config.container?.favicon  ?? normalize(join(__dirname, '../favicon.ico')),
+		manifest:    config.container?.manifest ? [config.container.manifest] : [],
+		request,
+		scripts:     config.container?.scripts,
+		session:     request.request.session,
+		styleSheets: config.container?.styleSheets,
+	}, configContainerData())
 }
