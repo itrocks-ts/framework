@@ -25,18 +25,17 @@ let selector: string
 
 selector = 'input[data-type=object], ul[data-type=objects] > li > input:not([type=hidden])'
 build<HTMLInputElement>(selector, async input => {
-	input.closest<HTMLLIElement>('li')?.classList.add('combobox')
+	input.classList.add('autocomplete')
 	loadCss('/node_modules/@itrocks/autocomplete/autocomplete.css')
-	return new (await import('../../../autocomplete/autocomplete.js')).AutoComplete(input)
+	new (await import('../../../autocomplete/autocomplete.js')).AutoComplete(input)
+	if (input.dataset.type !== 'object') {
+		(await import('../../../links/links.js')).links(input)
+	}
 })
 
 build<HTMLHeadingElement>('main > * > h2, main > * > header > h2', breadcrumb)
 
 build<HTMLButtonElement>('button.collapse', button => collapse(button, 'body'))
-
-build<HTMLInputElement>('ul[data-type=objects] > .combobox > input:not([type=hidden])', async input =>
-	(await import('../../../links/links.js')).links(input)
-)
 
 build<HTMLInputElement>('input[data-type=date]', async input =>
 	(await import('../../../air-datepicker/air-datepicker.js')).airDatePicker(input)
