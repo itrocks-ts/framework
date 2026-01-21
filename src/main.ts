@@ -17,8 +17,8 @@ type ActionObject   = Record<string, ActionFunction>
 type ActionFunction = (request: Request) => Promise<Response>
 
 frontScripts.push(
-	'/node_modules/air-datepicker/locale/en.js',
-	'/node_modules/air-datepicker/locale/fr.js'
+	'/lib/air-datepicker/locale/en.js',
+	'/lib/air-datepicker/locale/fr.js'
 )
 
 async function execute(request: Request): Promise<Response>
