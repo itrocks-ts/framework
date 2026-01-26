@@ -1,3 +1,4 @@
+import { Action }                 from '@itrocks/action'
 import { needOf }                 from '@itrocks/action'
 import { actionRequestDependsOn } from '@itrocks/action-request'
 import { Request }                from '@itrocks/action-request'
@@ -73,7 +74,10 @@ async function execute(request: Request): Promise<Response>
 export async function run()
 {
 	await loadRoutes(routes, config.routes ?? {})
-	actionRequestDependsOn({ getModule: routes.resolve.bind(routes) })
+	actionRequestDependsOn({
+		getModule:      routes.resolve.bind(routes),
+		isDomainObject: object => isAnyType(object) && !(object instanceof Action)
+	})
 
 	return new FastifyServer({
 		assetPath:   appDir,
