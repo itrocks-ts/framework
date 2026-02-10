@@ -76,7 +76,7 @@ export async function run()
 	await loadRoutes(routes, config.routes ?? {})
 	actionRequestDependsOn({
 		getModule:      routes.resolve.bind(routes),
-		isDomainObject: object => isAnyType(object) && !(object instanceof Action)
+		isDomainObject: object => isAnyType(object) && !(object.prototype instanceof Action)
 	})
 
 	return new FastifyServer({
