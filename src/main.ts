@@ -89,6 +89,7 @@ export async function run()
 		port:        config.server.port,
 		scriptCalls: ['loadCss', 'loadScript'],
 		secret:      config.session.secret ?? config.secret ?? 'defaultSecretHaving32CharactersOrGreater',
+		secure:      config.server.secure ?? 'auto',
 		store:       new FileStore(normalize(join(appDir, config.session.path)))
 	}).run()
 }
