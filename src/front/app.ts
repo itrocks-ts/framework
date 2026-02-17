@@ -27,7 +27,9 @@ selector = 'input[data-type=object], ul[data-type=objects] > li > input:not([typ
 build<HTMLInputElement>(selector, async input => {
 	input.classList.add('autocomplete')
 	loadCss('/@itrocks/autocomplete/autocomplete.css')
-	new (await import('@itrocks/autocomplete/autocomplete.js')).AutoComplete(input)
+	new (await import('@itrocks/autocomplete/autocomplete.js')).AutoComplete(input, {
+		allowNew: !['0', 'false', 'no', 'off'].includes(input.closest('form')?.dataset.allowNew ?? '0')
+	})
 	if (input.dataset.type !== 'object') {
 		(await import('@itrocks/links/links.js')).links(input)
 	}
