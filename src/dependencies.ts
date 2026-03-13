@@ -83,7 +83,7 @@ export function bind()
 
 	mysqlDependsOn({
 		applyReadTransformer: async function(data, property, object) {
-			const value = await applyTransformer(data[toColumn(property)], object, property, SQL, READ, data)
+			const value = await applyTransformer(data[property.toString()], object, property, SQL, READ, data)
 			if ((value !== IGNORE) && Reflect.getOwnMetadata(PROTECT_GET, object, metadataNameOf(property))) {
 				Reflect.deleteMetadata(PROTECT_GET, object, metadataNameOf(property))
 			}
