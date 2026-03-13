@@ -4,12 +4,14 @@ import { applyTransformer }      from '@itrocks/transformer'
 import { EDIT, HTML, OUTPUT }    from '@itrocks/transformer'
 import { ReflectClass }          from './reflect-class'
 
-export class ReflectProperty<T extends object> extends RP<T>
+export class ReflectProperty<T extends object, K extends keyof T = keyof T> extends RP<T, K>
 {
 
 	get class()
 	{
-		return Object.setPrototypeOf(super.class, ReflectClass.prototype)
+		const value = super.class
+		Object.defineProperty(this, 'class', { configurable: true, enumerable: false, value, writable: true })
+		return value ? new ReflectClass<T>(value.object ?? value.type) : value
 	}
 
 	async edit(format: string = HTML): Promise<any>

@@ -14,26 +14,19 @@ export class ReflectClass<T extends object = object> extends RC<T>
 		}
 	}
 
-	get parent()
+	get parent() : ReflectClass | null
 	{
-		const parent = super.parent
-			? Object.defineProperties(
-				Object.create(ReflectClass.prototype),
-				Object.getOwnPropertyDescriptors(super.parent)
-			)
-			: super.parent
+		const parentType = Object.getPrototypeOf(this.type)
+		const parent     = (parentType === Function.prototype) ? null : new ReflectClass(parentType)
 		Object.defineProperty(this, 'parent', { configurable: true, enumerable: false, value: parent, writable: true })
 		return parent
 	}
 
 	get properties()
 	{
-		const properties = super.properties
-		for (const reflectProperty of properties) {
-			Object.defineProperties(
-				Object.create(ReflectProperty.prototype),
-				Object.getOwnPropertyDescriptors(reflectProperty)
-			)
+		const properties = new Array<ReflectProperty<T>>
+		for (const name of this.propertyNames) {
+			properties.push(new ReflectProperty(this, name))
 		}
 		Object.defineProperty(
 			this, 'properties', { configurable: true, enumerable: false, value: properties, writable: true }
@@ -43,12 +36,9 @@ export class ReflectClass<T extends object = object> extends RC<T>
 
 	get property()
 	{
-		const properties = super.property
-		for (const entry of Object.entries(properties)) {
-			properties[entry[0] as keyof typeof properties] = Object.defineProperties(
-				Object.create(ReflectProperty.prototype),
-				Object.getOwnPropertyDescriptors(entry[1])
-			)
+		const properties = {} as { [K in keyof T]: ReflectProperty<T, K> }
+		for (const property of this.properties) {
+			properties[property.name] = property
 		}
 		Object.defineProperty(
 			this, 'property', { configurable: true, enumerable: false, value: properties, writable: true }
