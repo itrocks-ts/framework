@@ -7,7 +7,6 @@ import { appDir }                           from '@itrocks/app-dir'
 import { fileOf }                           from '@itrocks/class-file'
 import { isAnyFunction }                    from '@itrocks/class-type'
 import { isAnyType }                        from '@itrocks/class-type'
-import { KeyOf }                            from '@itrocks/class-type'
 import { Type }                             from '@itrocks/class-type'
 import { classViewDependsOn }               from '@itrocks/class-view'
 import { representativeValueOf }            from '@itrocks/class-view'
@@ -16,6 +15,7 @@ import { componentOf }                      from '@itrocks/composition'
 import { config }                           from '@itrocks/config'
 import { initCoreTransformers }             from '@itrocks/core-transformers'
 import { initStoreTransformers }            from '@itrocks/core-transformers'
+import { metadataNameOf }                   from '@itrocks/decorator/property'
 import { initFileTransformers }             from '@itrocks/file'
 import { PROTECT_GET }                      from '@itrocks/lazy-loading'
 import { initListProperties }               from '@itrocks/list-properties'
@@ -46,7 +46,7 @@ import { format, parse }                    from 'date-fns'
 import { join }                             from 'node:path'
 import { normalize }                        from 'node:path'
 
-async function propertyOutput<T extends object>(object: T, property: KeyOf<T>): Promise<string>
+async function propertyOutput<T extends object>(object: T, property: keyof T): Promise<string>
 {
 	return applyTransformer(await object[property], object, property, HTML, OUTPUT)
 }
@@ -83,14 +83,14 @@ export function bind()
 
 	mysqlDependsOn({
 		applyReadTransformer: async function(data, property, object) {
-			const value = await applyTransformer(data[property], object, property, SQL, READ, data)
-			if ((value !== IGNORE) && Reflect.getOwnMetadata(PROTECT_GET, object, property)) {
-				Reflect.deleteMetadata(PROTECT_GET, object, property)
+			const value = await applyTransformer(data[toColumn(property)], object, property, SQL, READ, data)
+			if ((value !== IGNORE) && Reflect.getOwnMetadata(PROTECT_GET, object, metadataNameOf(property))) {
+				Reflect.deleteMetadata(PROTECT_GET, object, metadataNameOf(property))
 			}
 			return value
 		},
 		applySaveTransformer: async function(object, property, data) {
-			const value = Reflect.getMetadata(PROTECT_GET, object, property)
+			const value = Reflect.getMetadata(PROTECT_GET, object, metadataNameOf(property))
 				? (Object.hasOwn(object, property) ? object[property] : undefined)
 				: await object[property]
 			return applyTransformer(value, object, property, SQL, SAVE, data)
