@@ -29,6 +29,7 @@ do you confirm deletion;confirmez-vous la suppression
 edit;modifier
 edit $1;modifier $1
 email;mail
+empty;vide
 en;fr
 false;faux
 file;fichier

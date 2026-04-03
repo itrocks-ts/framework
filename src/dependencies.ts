@@ -36,6 +36,8 @@ import { SqlFunction }                      from '@itrocks/sql-functions'
 import { createDataSource }                 from '@itrocks/storage'
 import { storeDependsOn }                   from '@itrocks/store'
 import { storeOf }                          from '@itrocks/store'
+import { multilineDependsOn }               from '@itrocks/string-formats'
+import { setMultilineTransformers }         from '@itrocks/string-formats/transformers'
 import { templateDependsOn }                from '@itrocks/template'
 import { Template }                         from '@itrocks/template-insight'
 import { applyTransformer }                 from '@itrocks/transformer'
@@ -81,6 +83,10 @@ export function bind()
 
 	initOrderedProperties()
 
+	multilineDependsOn({
+		setTransformers: setMultilineTransformers
+	})
+
 	mysqlDependsOn({
 		applyReadTransformer: async function(data, property, object) {
 			const value = await applyTransformer(data[property.toString()], object, property, SQL, READ, data)
@@ -111,13 +117,13 @@ export function bind()
 		calculate: (target: Type) => routes.summarize(fileOf(target).slice(appDir.length, -3))
 	})
 
+	propertyTranslateDependsOn({
+		setTransformers: setPropertyTranslateTransformers
+	})
+
 	storeDependsOn({
 		setTransformers: initStoreTransformers,
 		toStoreName:     toColumn
-	})
-
-	propertyTranslateDependsOn({
-		setTransformers: setPropertyTranslateTransformers
 	})
 
 	templateDependsOn({

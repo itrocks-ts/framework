@@ -47,6 +47,7 @@
 		"@itrocks/sql-functions": "latest",
 		"@itrocks/storage": "latest",
 		"@itrocks/store": "latest",
+		"@itrocks/string-formats": "latest",
 		"@itrocks/template": "latest",
 		"@itrocks/template-insight": "latest",
 		"@itrocks/transformer": "latest",
@@ -96,5 +97,5 @@
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' *.js *.d.ts"
 	},
 	"types": "./cjs/framework.d.ts",
-	"version": "0.3.8"
+	"version": "0.3.9"
 }
