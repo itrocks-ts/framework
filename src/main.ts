@@ -79,7 +79,7 @@ export async function run()
 		isDomainObject: object => isAnyType(object) && !(object.prototype instanceof Action)
 	})
 
-	return new FastifyServer({
+	const server = new FastifyServer({
 		assetPath:   appDir,
 		execute:     request => execute(new Request(request)),
 		favicon:     config.container?.favicon ?? normalize(join(__dirname, '../favicon.png')),
@@ -91,8 +91,12 @@ export async function run()
 		secret:      config.session.secret ?? config.secret ?? 'defaultSecretHaving32CharactersOrGreater',
 		secure:      config.server.secure ?? 'auto',
 		store:       new FileStore(normalize(join(appDir, config.session.path)))
-	}).run()
+	})
+	server.run()
+	servers.push(server)
 }
+
+export const servers = new Array<{ stop: () => void }>()
 
 function toResponse(mixedResponse: Response | string)
 {
