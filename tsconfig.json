@@ -3,13 +3,12 @@
 		"declaration": true,
 		"forceConsistentCasingInFileNames": true,
 		"module": "nodenext",
-		"moduleResolution": "nodenext",
-		"outDir": "./cjs",
+		"outDir": "cjs",
+		"rootDir": "src",
 		"skipLibCheck": true,
 		"sourceMap": true,
-		"strict": true,
-		"target": "ES2022"
+		"strict": true
 	},
-	"exclude": ["./src/front"],
-	"include": ["./src"]
+	"exclude": ["src/front"],
+	"include": ["src"]
 }

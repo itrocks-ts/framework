@@ -1,10 +1,10 @@
 {
 	"compilerOptions": {
-		"module": "ES2022",
-		"moduleResolution": "bundler",
+		"module": "esnext",
 		"outDir": "../..",
+		"rootDir": ".",
 		"sourceMap": false,
-		"target": "ES2022"
+		"target": "es2022"
 	},
 	"exclude": [],
 	"extends": "../../tsconfig.json",

@@ -58,19 +58,20 @@
 	},
 	"description": "RAD framework for intuitive web application development, blending data and domain-driven design with modular architecture",
 	"devDependencies": {
-		"typescript": "~5.9"
+		"typescript": "^6.0"
+	},
+	"engines": {
+		"node": ">=24"
 	},
 	"exports": "./cjs/framework.js",
 	"files": [
 		"config.yaml",
-		"favicon.ico",
+		"favicon.png",
 		"LICENSE",
 		"README.md",
-		"cjs/*",
 		"*.csv",
 		"*.d.ts",
-		"*.js",
-		"!*.map"
+		"*.js"
 	],
 	"homepage": "https://it.rocks",
 	"keywords": [
@@ -96,6 +97,5 @@
 		"build:back": "tsc",
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' *.js *.d.ts"
 	},
-	"types": "./cjs/framework.d.ts",
-	"version": "0.3.10"
+	"version": "0.3.11"
 }
