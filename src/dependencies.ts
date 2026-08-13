@@ -24,6 +24,7 @@ import { passwordDependsOn }                from '@itrocks/password'
 import { setPasswordTransformers }          from '@itrocks/password/transformers'
 import { propertyTranslateDependsOn }       from '@itrocks/property-translate'
 import { setPropertyTranslateTransformers } from '@itrocks/property-translate/transformers'
+import { CollectionType }                   from '@itrocks/property-type'
 import { displayOf }                        from '@itrocks/property-view'
 import { initOrderedProperties }            from '@itrocks/property-view'
 import { toColumn }                         from '@itrocks/rename'
@@ -33,6 +34,7 @@ import { requiredOf }                       from '@itrocks/required'
 import { routeDependsOn }                   from '@itrocks/route'
 import { routeOf, routes }                  from '@itrocks/route'
 import { SqlFunction }                      from '@itrocks/sql-functions'
+import { sqlJoinDependsOn }                 from '@itrocks/sql-join'
 import { createDataSource }                 from '@itrocks/storage'
 import { storeDependsOn }                   from '@itrocks/store'
 import { storeOf }                          from '@itrocks/store'
@@ -47,6 +49,13 @@ import { tr, trInit, trLoad }               from '@itrocks/translate'
 import { format, parse }                    from 'date-fns'
 import { join }                             from 'node:path'
 import { normalize }                        from 'node:path'
+import { ColumnDefinition }                 from './sql-join-dependencies'
+import { columnDefinitionsOf }              from './sql-join-dependencies'
+import { columnOf }                         from './sql-join-dependencies'
+import { rightColumnDefinitionOf }          from './sql-join-dependencies'
+import { TableDefinition }                  from './sql-join-dependencies'
+import { tableDefinitionOf }                from './sql-join-dependencies'
+import { tableOf }                          from './sql-join-dependencies'
 
 async function propertyOutput<T extends object>(object: T, property: keyof T): Promise<string>
 {
@@ -124,6 +133,24 @@ export function bind()
 	storeDependsOn({
 		setTransformers: initStoreTransformers,
 		toStoreName:     toColumn
+	})
+
+	sqlJoinDependsOn<TableDefinition, ColumnDefinition>({
+		columnDefinitionOf:      (tableDefinition, column) => columnDefinitionsOf(tableDefinition)[column],
+		columnDefinitionsOf,
+		columnOf,
+		componentOf:             columnDefinition => componentOf(columnDefinition.class.type, columnDefinition.name),
+		mandatoryOf:             columnDefinition => requiredOf(columnDefinition.class.type, columnDefinition.name),
+		multipleOf:              columnDefinition => columnDefinition.type instanceof CollectionType,
+		rightColumnDefinitionOf,
+		scalarOf:                columnDefinition => tableDefinitionOf(columnDefinition) === undefined,
+		storedAsValueOf:         columnDefinition => {
+			const tableDefinition = tableDefinitionOf(columnDefinition)
+			return !!tableDefinition && !storeOf(tableDefinition)
+		},
+		tableDefinitionIdentity: tableDefinition => tableDefinition,
+		tableDefinitionOf,
+		tableOf
 	})
 
 	templateDependsOn({
