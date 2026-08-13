@@ -9,7 +9,14 @@ import { ReflectClass }    from './reflect-class'
 import { ReflectProperty } from './reflect-property'
 
 export type ColumnDefinition = ReflectProperty<any, any>
-export type TableDefinition  = Type
+export type TableDefinition  = Type<any>
+
+export function columnDefinitionOf(
+	tableDefinition: TableDefinition, column: string
+): ColumnDefinition | undefined
+{
+	return columnDefinitionsOf(tableDefinition)[column]
+}
 
 export function columnDefinitionsOf(tableDefinition: TableDefinition): Record<string, ColumnDefinition>
 {
@@ -23,6 +30,16 @@ export function columnOf(columnDefinition: ColumnDefinition): string
 		? columnDefinition.name.toString() + 'Id'
 		: columnDefinition.name
 	return toColumn(property)
+}
+
+export function isCollection(columnDefinition: ColumnDefinition): boolean
+{
+	return columnDefinition.type instanceof CollectionType
+}
+
+export function isScalar(columnDefinition: ColumnDefinition): boolean
+{
+	return tableDefinitionOf(columnDefinition) === undefined
 }
 
 export function rightColumnDefinitionOf(columnDefinition: ColumnDefinition): ColumnDefinition | undefined

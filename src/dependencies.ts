@@ -24,7 +24,6 @@ import { passwordDependsOn }                from '@itrocks/password'
 import { setPasswordTransformers }          from '@itrocks/password/transformers'
 import { propertyTranslateDependsOn }       from '@itrocks/property-translate'
 import { setPropertyTranslateTransformers } from '@itrocks/property-translate/transformers'
-import { CollectionType }                   from '@itrocks/property-type'
 import { displayOf }                        from '@itrocks/property-view'
 import { initOrderedProperties }            from '@itrocks/property-view'
 import { toColumn }                         from '@itrocks/rename'
@@ -50,8 +49,11 @@ import { format, parse }                    from 'date-fns'
 import { join }                             from 'node:path'
 import { normalize }                        from 'node:path'
 import { ColumnDefinition }                 from './sql-join-dependencies'
+import { columnDefinitionOf }               from './sql-join-dependencies'
 import { columnDefinitionsOf }              from './sql-join-dependencies'
 import { columnOf }                         from './sql-join-dependencies'
+import { isCollection }                     from './sql-join-dependencies'
+import { isScalar }                         from './sql-join-dependencies'
 import { rightColumnDefinitionOf }          from './sql-join-dependencies'
 import { TableDefinition }                  from './sql-join-dependencies'
 import { tableDefinitionOf }                from './sql-join-dependencies'
@@ -130,27 +132,26 @@ export function bind()
 		setTransformers: setPropertyTranslateTransformers
 	})
 
-	storeDependsOn({
-		setTransformers: initStoreTransformers,
-		toStoreName:     toColumn
-	})
-
 	sqlJoinDependsOn<TableDefinition, ColumnDefinition>({
-		columnDefinitionOf:      (tableDefinition, column) => columnDefinitionsOf(tableDefinition)[column],
+		columnDefinitionOf,
 		columnDefinitionsOf,
 		columnOf,
-		componentOf:             columnDefinition => componentOf(columnDefinition.class.type, columnDefinition.name),
-		mandatoryOf:             columnDefinition => requiredOf(columnDefinition.class.type, columnDefinition.name),
-		multipleOf:              columnDefinition => columnDefinition.type instanceof CollectionType,
+		componentOf,
+		isCollection,
+		isScalar,
+		requiredOf,
 		rightColumnDefinitionOf,
-		scalarOf:                columnDefinition => tableDefinitionOf(columnDefinition) === undefined,
 		storedAsValueOf:         columnDefinition => {
 			const tableDefinition = tableDefinitionOf(columnDefinition)
 			return !!tableDefinition && !storeOf(tableDefinition)
 		},
-		tableDefinitionIdentity: tableDefinition => tableDefinition,
 		tableDefinitionOf,
 		tableOf
+	})
+
+	storeDependsOn({
+		setTransformers: initStoreTransformers,
+		toStoreName:     toColumn
 	})
 
 	templateDependsOn({
