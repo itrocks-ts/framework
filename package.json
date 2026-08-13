@@ -44,6 +44,7 @@
 		"@itrocks/request-response": "latest",
 		"@itrocks/required": "latest",
 		"@itrocks/route": "latest",
+		"@itrocks/sql-build": "latest",
 		"@itrocks/sql-functions": "latest",
 		"@itrocks/sql-join": "latest",
 		"@itrocks/storage": "latest",
@@ -100,5 +101,5 @@
 		"build:back": "tsc",
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' *.js *.d.ts"
 	},
-	"version": "0.4.1"
+	"version": "0.4.2"
 }

@@ -32,6 +32,7 @@ import { Headers }                          from '@itrocks/request-response'
 import { requiredOf }                       from '@itrocks/required'
 import { routeDependsOn }                   from '@itrocks/route'
 import { routeOf, routes }                  from '@itrocks/route'
+import { sqlBuildDependsOn }                from '@itrocks/sql-build'
 import { SqlFunction }                      from '@itrocks/sql-functions'
 import { sqlJoinDependsOn }                 from '@itrocks/sql-join'
 import { createDataSource }                 from '@itrocks/storage'
@@ -130,6 +131,10 @@ export function bind()
 
 	propertyTranslateDependsOn({
 		setTransformers: setPropertyTranslateTransformers
+	})
+
+	sqlBuildDependsOn<ColumnDefinition>({
+		columnOf
 	})
 
 	sqlJoinDependsOn<TableDefinition, ColumnDefinition>({
