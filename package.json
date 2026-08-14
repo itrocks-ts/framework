@@ -60,7 +60,7 @@
 	},
 	"description": "RAD framework for intuitive web application development, blending data and domain-driven design with modular architecture",
 	"devDependencies": {
-		"typescript": "^6.0"
+		"typescript": "^7.0"
 	},
 	"engines": {
 		"node": ">=24"
@@ -101,5 +101,5 @@
 		"build:back": "tsc",
 		"build:front": "tsc -p src/front/tsconfig.json && sed -i 's#../../##g' *.js *.d.ts"
 	},
-	"version": "0.4.2"
+	"version": "0.4.3"
 }
