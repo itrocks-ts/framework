@@ -11,11 +11,14 @@ import { Response }               from '@itrocks/request-response'
 import { loadRoutes, routes }     from '@itrocks/route'
 import { storeOf }                from '@itrocks/store'
 import { frontScripts }           from '@itrocks/template'
+import { randomBytes }            from 'node:crypto'
 import { join }                   from 'node:path'
 import { normalize }              from 'node:path'
 
 type ActionObject   = Record<string, ActionFunction>
 type ActionFunction = (request: Request) => Promise<Response>
+
+const ephemeralSessionSecret = randomBytes(32).toString('base64url')
 
 frontScripts.push(
 	'/lib/air-datepicker/locale/en.js',
@@ -81,14 +84,16 @@ export async function run()
 
 	const server = new FastifyServer({
 		assetPath:   appDir,
+		cookie:      config.session.cookie,
 		execute:     request => execute(new Request(request)),
 		favicon:     config.container?.favicon ?? normalize(join(__dirname, '../favicon.png')),
 		frontScripts,
 		host:        config.server.host,
 		manifest:    config.container?.manifest,
 		port:        config.server.port,
+		rolling:     config.session.rolling,
 		scriptCalls: ['loadCss', 'loadScript'],
-		secret:      config.session.secret ?? config.secret ?? 'defaultSecretHaving32CharactersOrGreater',
+		secret:      config.session.secret ?? config.secret ?? ephemeralSessionSecret,
 		secure:      config.server.secure ?? 'auto',
 		store:       new FileStore(normalize(join(appDir, config.session.path)))
 	})
