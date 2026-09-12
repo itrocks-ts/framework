@@ -59,14 +59,20 @@ framework once at startup. It will:
 // index.ts
 import '@itrocks/framework'
 
-// Import your application modules so that their configuration, actions
-// and templates are discovered during composition.
-import '@itrocks/home'
-import './src/domain'
 ```
 
 When this file is executed with Node (after TypeScript compilation), the
 framework starts automatically and exposes your routes and actions.
+
+Application code that must run after module composition but before the HTTP
+server starts can register an initializer without loading domain decorators
+during bootstrap:
+
+```ts
+import { beforeFrameworkRun } from '@itrocks/framework'
+
+beforeFrameworkRun(() => import('./src/dependencies'))
+```
 
 ### Using framework reflection helpers
 
@@ -119,7 +125,7 @@ In this example:
 
 ## API
 
-`@itrocks/framework` exposes two main public symbols and the side‑effect
+`@itrocks/framework` exposes its bootstrap initializer, two reflection helpers and the side‑effect
 of bootstrapping the framework when its main module is imported.
 
 ### Framework bootstrap (side‑effect of importing `@itrocks/framework`)
@@ -144,6 +150,13 @@ the following steps are executed:
 You normally do not call any of these functions directly. Importing the
 module once at startup is enough to run your application, provided that
 you have configured your routes and modules.
+
+### `beforeFrameworkRun(initializer)`
+
+Registers application wiring that must load after it.rocks composition and dependency binding,
+but before routes are loaded and the HTTP server starts. Initializers run sequentially in their
+registration order and may be asynchronous. Use this for application-specific dependency hooks;
+keep domain imports inside the callback.
 
 ### `class ReflectClass<T extends object = object> extends RC<T>`
 

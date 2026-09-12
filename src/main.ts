@@ -1,24 +1,26 @@
-import { Action }                 from '@itrocks/action'
-import { needOf }                 from '@itrocks/action'
 import { actionRequestDependsOn } from '@itrocks/action-request'
 import { Request }                from '@itrocks/action-request'
+import { Action }                 from '@itrocks/action'
+import { needOf }                 from '@itrocks/action'
 import { appDir }                 from '@itrocks/app-dir'
 import { isAnyType }              from '@itrocks/class-type'
 import { config }                 from '@itrocks/config'
-import { FastifyServer }          from '@itrocks/fastify'
 import { FileStore }              from '@itrocks/fastify-file-session-store'
+import { FastifyServer }          from '@itrocks/fastify'
 import { Response }               from '@itrocks/request-response'
 import { loadRoutes, routes }     from '@itrocks/route'
+import { sessionDependsOn }       from '@itrocks/session'
 import { storeOf }                from '@itrocks/store'
 import { frontScripts }           from '@itrocks/template'
 import { randomBytes }            from 'node:crypto'
 import { join }                   from 'node:path'
 import { normalize }              from 'node:path'
 
-type ActionObject   = Record<string, ActionFunction>
 type ActionFunction = (request: Request) => Promise<Response>
+type ActionObject   = Record<string, ActionFunction>
 
 const ephemeralSessionSecret = randomBytes(32).toString('base64url')
+export const servers         = new Array<{ stop: () => void }>()
 
 frontScripts.push(
 	'/lib/air-datepicker/locale/en.js',
@@ -82,11 +84,14 @@ export async function run()
 		isDomainObject: object => isAnyType(object) && !(object.prototype instanceof Action)
 	})
 
+	const sessionStore = new FileStore(normalize(join(appDir, config.session.path)))
+	sessionDependsOn({ store: sessionStore })
+
 	const server = new FastifyServer({
-		assetPath:   appDir,
-		cookie:      config.session.cookie,
-		execute:     request => execute(new Request(request)),
-		favicon:     config.container?.favicon ?? normalize(join(__dirname, '../favicon.png')),
+		assetPath: appDir,
+		cookie:    config.session.cookie,
+		execute:   request => execute(new Request(request)),
+		favicon:   config.container?.favicon ?? normalize(join(__dirname, '../favicon.png')),
 		frontScripts,
 		host:        config.server.host,
 		manifest:    config.container?.manifest,
@@ -95,13 +100,11 @@ export async function run()
 		scriptCalls: ['loadCss', 'loadScript'],
 		secret:      config.session.secret ?? config.secret ?? ephemeralSessionSecret,
 		secure:      config.server.secure ?? 'auto',
-		store:       new FileStore(normalize(join(appDir, config.session.path)))
+		store:       sessionStore
 	})
 	server.run()
 	servers.push(server)
 }
-
-export const servers = new Array<{ stop: () => void }>()
 
 function toResponse(mixedResponse: Response | string)
 {

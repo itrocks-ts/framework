@@ -44,6 +44,7 @@
 		"@itrocks/request-response": "latest",
 		"@itrocks/required": "latest",
 		"@itrocks/route": "latest",
+		"@itrocks/session": "latest",
 		"@itrocks/sql-build": "latest",
 		"@itrocks/sql-functions": "latest",
 		"@itrocks/sql-join": "latest",
@@ -101,5 +102,5 @@
 		"build:back": "tsc",
 		"build:front": "tsc -p src/front/tsconfig.json && node -e \"const fs=require('node:fs');for(const file of fs.readdirSync('.').filter(file=>file.endsWith('.js')||file.endsWith('.d.ts')))fs.writeFileSync(file,fs.readFileSync(file,'utf8').replaceAll('../../',''))\""
 	},
-	"version": "0.6.0"
+	"version": "0.6.1"
 }
