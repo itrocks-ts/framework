@@ -1,4 +1,5 @@
 /.idea
 *.d.ts
 *.js
+!test/*.js
 *.map
