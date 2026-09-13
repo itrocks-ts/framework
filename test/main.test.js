@@ -1,13 +1,18 @@
-const assert                      = require('node:assert/strict')
-const { compose }                 = require('@itrocks/compose')
-const { configuredFastifyServer } = require('../cjs/main')
-const path                        = require('node:path')
-const test                        = require('node:test')
+const assert        = require('node:assert/strict')
+const { spawnSync } = require('node:child_process')
+const path          = require('node:path')
+const test          = require('node:test')
 
-test('resolves the configured server after composition', () => {
-	compose(path.resolve(__dirname, '..'), {
-		'@itrocks/fastify:FastifyServer': '/test/fastify-server.js:TestFastifyServer'
+test('does not load main before the framework composition phase', () => {
+	const child = spawnSync(process.execPath, ['-e', `
+		const framework = require.resolve('./cjs/framework')
+		const main      = require.resolve('./cjs/main')
+		require(framework)
+		process.exit(require.cache[main] ? 2 : 0)
+	`], {
+		cwd:      path.resolve(__dirname, '..'),
+		encoding: 'utf8'
 	})
 
-	assert.equal(configuredFastifyServer().name, 'TestFastifyServer')
+	assert.equal(child.status, 0, child.stderr || child.stdout)
 })

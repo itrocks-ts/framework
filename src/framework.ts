@@ -6,7 +6,7 @@ import { scanConfigFiles } from '@itrocks/config'
 
 export type FrameworkInitializer = () => Promise<void> | void
 
-export { servers }         from './main'
+export { servers }         from './servers'
 
 export { ReflectClass }    from './reflect-class'
 export { ReflectProperty } from './reflect-property'

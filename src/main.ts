@@ -6,8 +6,7 @@ import { appDir }                 from '@itrocks/app-dir'
 import { isAnyType }              from '@itrocks/class-type'
 import { config }                 from '@itrocks/config'
 import { FileStore }              from '@itrocks/fastify-file-session-store'
-import type { FastifyConfig }     from '@itrocks/fastify'
-import type { FastifyServer }     from '@itrocks/fastify'
+import { FastifyServer }          from '@itrocks/fastify'
 import { Response }               from '@itrocks/request-response'
 import { loadRoutes, routes }     from '@itrocks/route'
 import { sessionDependsOn }       from '@itrocks/session'
@@ -16,23 +15,17 @@ import { frontScripts }           from '@itrocks/template'
 import { randomBytes }            from 'node:crypto'
 import { join }                   from 'node:path'
 import { normalize }              from 'node:path'
+import { servers }                from './servers'
 
 type ActionFunction = (request: Request) => Promise<Response>
 type ActionObject   = Record<string, ActionFunction>
 
 const ephemeralSessionSecret = randomBytes(32).toString('base64url')
-export const servers         = new Array<{ stop: () => void }>()
 
 frontScripts.push(
 	'/lib/air-datepicker/locale/en.js',
 	'/lib/air-datepicker/locale/fr.js'
 )
-
-/** Resolves the server only after framework composition has installed its replacements. */
-export function configuredFastifyServer(): typeof FastifyServer
-{
-	return require('@itrocks/fastify').FastifyServer
-}
 
 async function execute(request: Request): Promise<Response>
 {
@@ -94,8 +87,7 @@ export async function run()
 	const sessionStore = new FileStore(normalize(join(appDir, config.session.path)))
 	sessionDependsOn({ store: sessionStore })
 
-	const Server = configuredFastifyServer()
-	const server = new Server({
+	const server = new FastifyServer({
 		assetPath: appDir,
 		cookie:    config.session.cookie,
 		execute:   request => execute(new Request(request)),
@@ -109,7 +101,7 @@ export async function run()
 		secret:      config.session.secret ?? config.secret ?? ephemeralSessionSecret,
 		secure:      config.server.secure ?? 'auto',
 		store:       sessionStore
-	} as FastifyConfig)
+	})
 	server.run()
 	servers.push(server)
 }
