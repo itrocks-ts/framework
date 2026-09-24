@@ -92,6 +92,7 @@ export async function run()
 		cookie:    config.session.cookie,
 		execute:   request => execute(new Request(request)),
 		favicon:   config.container?.favicon ?? normalize(join(__dirname, '../favicon.png')),
+		fileSize:  config.server.fileSize,
 		frontScripts,
 		headers:     config.server.headers,
 		host:        config.server.host,
