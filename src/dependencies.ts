@@ -45,10 +45,12 @@ import { Template }                         from '@itrocks/template-insight'
 import { applyTransformer }                 from '@itrocks/transformer'
 import { HTML, IGNORE }                     from '@itrocks/transformer'
 import { OUTPUT, READ, SAVE, SQL }          from '@itrocks/transformer'
-import { tr, trInit, trLoad }               from '@itrocks/translate'
+import { lang }                             from '@itrocks/translate'
+import { tr }                               from '@itrocks/translate'
 import { format, parse }                    from 'date-fns'
 import { join }                             from 'node:path'
 import { normalize }                        from 'node:path'
+import { configureLanguages }               from './language'
 import { ColumnDefinition }                 from './sql-join-dependencies'
 import { columnDefinitionOf }               from './sql-join-dependencies'
 import { columnDefinitionsOf }              from './sql-join-dependencies'
@@ -165,10 +167,7 @@ export function bind()
 			: '' + data
 	})
 
-	trInit('fr-FR')
-	trLoad(join(__dirname, '..', 'fr-FR.csv')).catch()
-	trLoad(join(appDir, 'app', 'fr-FR.csv')).catch()
-	trLoad(join(appDir, 'fr-FR.csv')).catch()
+	configureLanguages()
 
 	Action.prototype.htmlTemplateResponse = async function(
 		data: any, request: Request, templateFile: string, statusCode = 200, headers: Headers = {}
@@ -207,6 +206,7 @@ function defaultContainerData(request: Request)
 	return Object.assign({
 		action:      request.action,
 		favicon:     config.container?.favicon  ?? normalize(join(__dirname, '../favicon.ico')),
+		language:    lang(),
 		manifest:    config.container?.manifest ? [config.container.manifest] : [],
 		request,
 		scripts:     config.container?.scripts,

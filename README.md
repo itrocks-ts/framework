@@ -74,6 +74,24 @@ import { beforeFrameworkRun } from '@itrocks/framework'
 beforeFrameworkRun(() => import('./src/dependencies'))
 ```
 
+### Request languages
+
+The framework can select one translation catalog for each request without sharing language state between concurrent
+requests. Configure the supported languages and the source language in the application configuration:
+
+```yaml
+translate:
+  defaultLanguage: fr-FR
+  sourceLanguage: en-US
+  supportedLanguages:
+    - en-US
+    - fr-FR
+```
+
+The language stored in `request.session.language` takes precedence. Otherwise, the framework negotiates the
+`Accept-Language` header, matching an exact locale first and then its base language. Unsupported values fall back to
+`defaultLanguage`. Every response includes `Content-Language` and varies on `Accept-Language`.
+
 ### Using framework reflection helpers
 
 `ReflectClass` and `ReflectProperty` behave like their counterparts from

@@ -7,14 +7,17 @@ import { isAnyType }              from '@itrocks/class-type'
 import { config }                 from '@itrocks/config'
 import { FileStore }              from '@itrocks/fastify-file-session-store'
 import { FastifyServer }          from '@itrocks/fastify'
+import { Headers }                from '@itrocks/request-response'
 import { Response }               from '@itrocks/request-response'
 import { loadRoutes, routes }     from '@itrocks/route'
 import { sessionDependsOn }       from '@itrocks/session'
 import { storeOf }                from '@itrocks/store'
 import { frontScripts }           from '@itrocks/template'
+import { lang }                   from '@itrocks/translate'
 import { randomBytes }            from 'node:crypto'
 import { join }                   from 'node:path'
 import { normalize }              from 'node:path'
+import { withRequestLanguage }    from './language'
 import { servers }                from './servers'
 
 type ActionFunction = (request: Request) => Promise<Response>
@@ -26,6 +29,19 @@ frontScripts.push(
 	'/lib/air-datepicker/locale/en.js',
 	'/lib/air-datepicker/locale/fr.js'
 )
+
+function appendVary(headers: Headers, value: string): void
+{
+	const name   = Object.keys(headers).find(name => name.toLowerCase() === 'vary') ?? 'Vary'
+	const values = (headers[name] ?? '').split(',').map(value => value.trim()).filter(Boolean)
+	if (!values.some(current => current.toLowerCase() === value.toLowerCase())) values.push(value)
+	headers[name] = values.join(', ')
+}
+
+function defaultHeader(headers: Headers, name: string, value: string): void
+{
+	if (!Object.keys(headers).some(current => current.toLowerCase() === name.toLowerCase())) headers[name] = value
+}
 
 async function execute(request: Request): Promise<Response>
 {
@@ -90,7 +106,12 @@ export async function run()
 	const server = new FastifyServer({
 		assetPath: appDir,
 		cookie:    config.session.cookie,
-		execute:   request => execute(new Request(request)),
+		execute:   request => withRequestLanguage(request, async () => {
+			const response = await execute(new Request(request))
+			appendVary(response.headers, 'Accept-Language')
+			defaultHeader(response.headers, 'Content-Language', lang())
+			return response
+		}),
 		favicon:   config.container?.favicon ?? normalize(join(__dirname, '../favicon.png')),
 		fileSize:  config.server.fileSize,
 		frontScripts,
