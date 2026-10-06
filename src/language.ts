@@ -8,13 +8,11 @@ import { join }           from 'node:path'
 
 type LanguageConfiguration = {
 	defaultLanguage:    string
-	sourceLanguage:     string
 	supportedLanguages: string[]
 }
 
 let configuration: LanguageConfiguration = {
 	defaultLanguage:    'fr-FR',
-	sourceLanguage:     'en-US',
 	supportedLanguages: ['fr-FR']
 }
 let loading = Promise.resolve<unknown>(undefined)
@@ -29,14 +27,13 @@ export function configureLanguages()
 {
 	const options            = (config.translate ?? {}) as LanguageConfiguration
 	const defaultLanguage    = canonicalLanguage(options.defaultLanguage) ?? 'fr-FR'
-	const sourceLanguage     = canonicalLanguage(options.sourceLanguage)  ?? 'en-US'
 	const supportedLanguages = options.supportedLanguages
 		.map(language => canonicalLanguage(language))
 		.filter((language): language is string => !!language)
 	if (!supportedLanguages.includes(defaultLanguage)) {
 		supportedLanguages.push(defaultLanguage)
 	}
-	configuration = { defaultLanguage, sourceLanguage, supportedLanguages: [...new Set(supportedLanguages)] }
+	configuration = { defaultLanguage, supportedLanguages: [...new Set(supportedLanguages)] }
 
 	trInit(defaultLanguage)
 
@@ -46,10 +43,7 @@ export function configureLanguages()
 		for (const language of configuration.supportedLanguages) {
 			for (const directory of directories) {
 				const file = join(directory, language + '.csv')
-				await trLoad(file, { language })
-				if ((language !== sourceLanguage) && configuration.supportedLanguages.includes(sourceLanguage)) {
-					await trLoad(file, { language: sourceLanguage, reverse: true })
-				}
+				await trLoad(file, language)
 			}
 		}
 	})()

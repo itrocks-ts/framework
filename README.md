@@ -77,12 +77,12 @@ beforeFrameworkRun(() => import('./src/dependencies'))
 ### Request languages
 
 The framework can select one translation catalog for each request without sharing language state between concurrent
-requests. Configure the supported languages and the source language in the application configuration:
+requests. Templates and translation keys are written in English. Configure the supported languages in the application
+configuration:
 
 ```yaml
 translate:
   defaultLanguage: fr-FR
-  sourceLanguage: en-US
   supportedLanguages:
     - en-US
     - fr-FR
@@ -90,7 +90,11 @@ translate:
 
 The language stored in `request.session.language` takes precedence. Otherwise, the framework negotiates the
 `Accept-Language` header, matching an exact locale first and then its base language. Unsupported values fall back to
-`defaultLanguage`. Every response includes `Content-Language` and varies on `Accept-Language`.
+`defaultLanguage`. The framework loads each `<language>.csv` catalog directly; English needs no catalog because it is
+the source language. Every response includes `Content-Language` and varies on `Accept-Language`.
+
+Catalog rows contain lowercase, context-free fragments. Sentence periods stay in templates so the translation engine
+can translate each sentence independently and restore contextual capitalization.
 
 ### Using framework reflection helpers
 
