@@ -19,27 +19,29 @@ let configuration: LanguageConfiguration = {
 }
 let loading = Promise.resolve<unknown>(undefined)
 
-function canonicalLanguage(value: unknown): string | undefined
+function canonicalLanguage(value: string): string | void
 {
-	if (typeof value !== 'string') return
-	try { return Intl.getCanonicalLocales(value)[0] }
+	try   { return Intl.getCanonicalLocales(value)[0] }
 	catch { return }
 }
 
 export function configureLanguages()
 {
-	const options            = config.translate ?? {}
+	const options            = (config.translate ?? {}) as LanguageConfiguration
 	const defaultLanguage    = canonicalLanguage(options.defaultLanguage) ?? 'fr-FR'
-	const sourceLanguage     = canonicalLanguage(options.sourceLanguage) ?? 'en-US'
-	const supportedLanguages: string[] = Array.isArray(options.supportedLanguages)
-		? options.supportedLanguages.map((language: unknown) => canonicalLanguage(language))
-			.filter((language: string | undefined): language is string => !!language)
-		: [defaultLanguage]
-	if (!supportedLanguages.includes(defaultLanguage)) supportedLanguages.push(defaultLanguage)
+	const sourceLanguage     = canonicalLanguage(options.sourceLanguage)  ?? 'en-US'
+	const supportedLanguages = options.supportedLanguages
+		.map(language => canonicalLanguage(language))
+		.filter((language): language is string => !!language)
+	if (!supportedLanguages.includes(defaultLanguage)) {
+		supportedLanguages.push(defaultLanguage)
+	}
 	configuration = { defaultLanguage, sourceLanguage, supportedLanguages: [...new Set(supportedLanguages)] }
 
 	trInit(defaultLanguage)
+
 	loading = (async () => {
+		// TODO search language files everywhere in application modules, not only into app
 		const directories = [join(__dirname, '..'), join(appDir, 'app'), appDir]
 		for (const language of configuration.supportedLanguages) {
 			for (const directory of directories) {
@@ -56,7 +58,7 @@ export function configureLanguages()
 export function languageFromHeader(
 	header: string | undefined,
 	supportedLanguages = configuration.supportedLanguages,
-	defaultLanguage = configuration.defaultLanguage
+	defaultLanguage    = configuration.defaultLanguage
 ): string
 {
 	const preferences = (header ?? '').split(',').map((item, index) => {
@@ -73,7 +75,7 @@ export function languageFromHeader(
 		if (!requested) continue
 		const exact = supportedLanguages.find(language => language.toLowerCase() === requested.toLowerCase())
 		if (exact) return exact
-		const base = requested.split('-')[0]!.toLowerCase()
+		const base       = requested.split('-')[0]!.toLowerCase()
 		const compatible = supportedLanguages.find(language => language.split('-')[0]!.toLowerCase() === base)
 		if (compatible) return compatible
 	}

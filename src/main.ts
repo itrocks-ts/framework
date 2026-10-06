@@ -32,15 +32,19 @@ frontScripts.push(
 
 function appendVary(headers: Headers, value: string): void
 {
-	const name   = Object.keys(headers).find(name => name.toLowerCase() === 'vary') ?? 'Vary'
+	const name   = Object.keys(headers).find(name => (name.toLowerCase() === 'vary')) ?? 'Vary'
 	const values = (headers[name] ?? '').split(',').map(value => value.trim()).filter(Boolean)
-	if (!values.some(current => current.toLowerCase() === value.toLowerCase())) values.push(value)
+	if (!values.some(current => (current.toLowerCase() === value.toLowerCase()))) {
+		values.push(value)
+	}
 	headers[name] = values.join(', ')
 }
 
 function defaultHeader(headers: Headers, name: string, value: string): void
 {
-	if (!Object.keys(headers).some(current => current.toLowerCase() === name.toLowerCase())) headers[name] = value
+	if (!Object.keys(headers).some(current => (current.toLowerCase() === name.toLowerCase()))) {
+		headers[name] = value
+	}
 }
 
 async function execute(request: Request): Promise<Response>
