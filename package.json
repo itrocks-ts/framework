@@ -22,7 +22,6 @@
 		"@itrocks/compose": "latest",
 		"@itrocks/composition": "latest",
 		"@itrocks/config": "latest",
-		"@itrocks/confirm": "latest",
 		"@itrocks/contained-auto-width": "latest",
 		"@itrocks/core-transformers": "latest",
 		"@itrocks/decorator": "latest",
@@ -105,5 +104,5 @@
 		"build:front": "tsc -p src/front/tsconfig.json && node -e \"const fs=require('node:fs');for(const file of fs.readdirSync('.').filter(file=>file.endsWith('.js')||file.endsWith('.d.ts')))fs.writeFileSync(file,fs.readFileSync(file,'utf8').replaceAll('../../',''))\"",
 		"test": "npm run build && node --test test/*.test.js"
 	},
-	"version": "0.6.6"
+	"version": "0.6.7"
 }
