@@ -7,18 +7,19 @@ import { trWithLanguage } from '@itrocks/translate'
 import { join }           from 'node:path'
 
 type LanguageConfiguration = {
-	defaultLanguage:    string
-	supportedLanguages: string[]
+	defaultLanguage?:    string
+	supportedLanguages?: string[]
 }
 
-let configuration: LanguageConfiguration = {
-	defaultLanguage:    'fr-FR',
-	supportedLanguages: ['fr-FR']
+let configuration = {
+	defaultLanguage:    'en-US',
+	supportedLanguages: ['en-US']
 }
 let loading = Promise.resolve<unknown>(undefined)
 
-function canonicalLanguage(value: string): string | void
+function canonicalLanguage(value?: string): string | void
 {
+	if (!value) return
 	try   { return Intl.getCanonicalLocales(value)[0] }
 	catch { return }
 }
@@ -26,8 +27,8 @@ function canonicalLanguage(value: string): string | void
 export function configureLanguages()
 {
 	const options            = (config.translate ?? {}) as LanguageConfiguration
-	const defaultLanguage    = canonicalLanguage(options.defaultLanguage) ?? 'fr-FR'
-	const supportedLanguages = options.supportedLanguages
+	const defaultLanguage    = canonicalLanguage(options.defaultLanguage) ?? configuration.defaultLanguage
+	const supportedLanguages = (options.supportedLanguages ?? configuration.supportedLanguages)
 		.map(language => canonicalLanguage(language))
 		.filter((language): language is string => !!language)
 	if (!supportedLanguages.includes(defaultLanguage)) {
