@@ -25,6 +25,7 @@
 		"@itrocks/confirm": "latest",
 		"@itrocks/contained-auto-width": "latest",
 		"@itrocks/core-transformers": "latest",
+		"@itrocks/decorator": "latest",
 		"@itrocks/default-action-workflow": "latest",
 		"@itrocks/fastify": "latest",
 		"@itrocks/fastify-file-session-store": "latest",
@@ -56,6 +57,7 @@
 		"@itrocks/transformer": "latest",
 		"@itrocks/translate": "latest",
 		"@itrocks/xtarget": "latest",
+		"@itrocks/uses": "latest",
 		"air-datepicker": "^3.6",
 		"date-fns": "^4.1"
 	},
