@@ -56,3 +56,5 @@ XTargetDefaultOptions({ plugins: [
 	XTargetHistory, XTargetHoldOn, XTargetMainTarget, XTargetModifier, XTargetSecureClick
 ] })
 buildXTarget()
+
+export { HttpMetadataProvider } from './property-select-metadata.js'

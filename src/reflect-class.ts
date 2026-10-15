@@ -46,6 +46,19 @@ export class ReflectClass<T extends object = object> extends RC<T>
 		return properties
 	}
 
+	get propertyNames(): Array<keyof T>
+	{
+		const names = new Set(Object.keys(this.propertyTypes))
+		let prototype = this.type.prototype
+		while (prototype && prototype !== Object.prototype) {
+			for (const [name, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(prototype))) {
+				if (descriptor.get && !name.startsWith('_')) names.add(name)
+			}
+			prototype = Object.getPrototypeOf(prototype)
+		}
+		return [...names].sort() as Array<keyof T>
+	}
+
 	get uses()
 	{
 		const value = usesOf(this.type)

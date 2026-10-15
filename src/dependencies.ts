@@ -44,6 +44,7 @@ import { format, parse }                    from 'date-fns'
 import { join }                             from 'node:path'
 import { normalize }                        from 'node:path'
 import { configureLanguages }               from './language'
+import { bindPropertySelect }                from './property-select'
 import { bindSqlProjection }                 from './sql-projection'
 
 async function propertyOutput<T extends object>(object: T, property: keyof T): Promise<string>
@@ -84,6 +85,8 @@ export function bind()
 	multilineDependsOn({
 		setTransformers: setMultilineTransformers
 	})
+
+	bindPropertySelect()
 
 	bindSqlProjection()
 

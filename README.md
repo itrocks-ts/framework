@@ -305,3 +305,10 @@ See [SQL relationship binding](docs/sql-relationships.md) for public hooks, inve
 The server bootstrap binds MySQL projection conversion and SQL metadata through the public
 [`@itrocks/framework/sql-projection`](docs/sql-projection.md) subpath. Isolated adapters can use the same binding
 without importing the server bootstrap.
+
+### Authorised property metadata
+
+The public [`@itrocks/framework/property-select`](docs/property-select.md) adapter serves authorised reflection
+metadata through real actions. Configure business roots and optional path grants, then supply request-specific
+access restrictions through [`propertySelectDependsOn`](docs/dependencies.md#property-metadata). The browser `property-select-metadata.js` entry provides
+`HttpMetadataProvider`, implementing the selector's neutral metadata port without loading server reflection.

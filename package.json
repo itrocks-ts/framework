@@ -35,6 +35,7 @@
 		"@itrocks/mysql": "latest",
 		"@itrocks/notifications": "latest",
 		"@itrocks/password": "latest",
+		"@itrocks/property-select": "latest",
 		"@itrocks/property-translate": "latest",
 		"@itrocks/property-type": "latest",
 		"@itrocks/property-view": "latest",
@@ -71,6 +72,9 @@
 	},
 	"exports": {
 		".": "./cjs/framework.js",
+		"./property-select": "./cjs/property-select.js",
+		"./property-select-actions": "./cjs/property-select-actions.js",
+		"./property-select-metadata.js": "./property-select-metadata.js",
 		"./sql-projection": "./cjs/sql-projection.js",
 		"./sql-relationships": "./cjs/sql-relationships.js"
 	},
@@ -79,6 +83,8 @@
 		"favicon.png",
 		"LICENSE",
 		"README.md",
+		"docs/dependencies.md",
+		"docs/property-select.md",
 		"docs/sql-projection.md",
 		"docs/sql-relationships.md",
 		"cjs",
@@ -113,5 +119,5 @@
 		"build:test": "tsc -p test/tsconfig.json",
 		"test": "npm run build && npm run build:test && node --test test/*.test.js test/*.test.mjs"
 	},
-	"version": "0.8.1"
+	"version": "0.9.0"
 }
