@@ -14,7 +14,7 @@ No metadata root is available by default. Register each permitted business root 
 propertySelect:
   roots:
     invoice:
-      type: './business/invoice:Invoice'
+      type: '/business/invoice:Invoice'
       version: '1'
       advice:
         - customer.address
@@ -24,6 +24,7 @@ propertySelect:
 ```
 
 `type` is a configured module destination with optional export name, or a class supplied by an initializer.
+A leading `/` denotes the application directory; package destinations use their public module specifier.
 The request supplies an opaque registered root id; it cannot supply a module or class name.
 Omitting `paths` permits the root's reflected catalogue. An explicit list grants those complete paths and their
 navigation prefixes. It does not grant every descendant of a relation. The catalogue includes inherited fields

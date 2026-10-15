@@ -119,5 +119,5 @@
 		"build:test": "tsc -p test/tsconfig.json",
 		"test": "npm run build && npm run build:test && node --test test/*.test.js test/*.test.mjs"
 	},
-	"version": "0.9.2"
+	"version": "0.9.3"
 }
