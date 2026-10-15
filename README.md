@@ -293,3 +293,9 @@ async function renderProperty(object: any, name: string) {
 - Build higher‑level tooling (CRUD generators, admin dashboards,
   documentation tools) on top of the reflection API exposed by the
   framework.
+
+## SQL relationship adapter
+
+The public `@itrocks/framework/sql-relationships` subpath provides reflection/schema bindings for deterministic
+relationship graphs without starting the framework server. Normal bootstrap installs these bindings automatically.
+See [SQL relationship binding](docs/sql-relationships.md) for public hooks, inverse/link mappings and custom schemas.

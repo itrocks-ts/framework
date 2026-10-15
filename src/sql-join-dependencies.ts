@@ -1,12 +1,12 @@
-import { inherits }        from '@itrocks/class-type'
-import { isAnyType }       from '@itrocks/class-type'
-import { Type }            from '@itrocks/class-type'
-import { compositeOf }     from '@itrocks/composition'
-import { CollectionType }  from '@itrocks/property-type'
-import { toColumn }        from '@itrocks/rename'
-import { storeOf }         from '@itrocks/store'
-import { ReflectClass }    from './reflect-class'
-import { ReflectProperty } from './reflect-property'
+import { inherits }          from '@itrocks/class-type'
+import { Type }              from '@itrocks/class-type'
+import { compositeOf }       from '@itrocks/composition'
+import { UnknownType }       from '@itrocks/property-type'
+import { toColumn }          from '@itrocks/rename'
+import { RelationshipError } from '@itrocks/sql-join'
+import { storeOf }           from '@itrocks/store'
+import { ReflectClass }      from './reflect-class'
+import { ReflectProperty }   from './reflect-property'
 
 export type ColumnDefinition = ReflectProperty<any, any>
 export type TableDefinition  = Type<any>
@@ -15,12 +15,14 @@ export function columnDefinitionOf(
 	tableDefinition: TableDefinition, column: string
 ): ColumnDefinition | undefined
 {
-	return columnDefinitionsOf(tableDefinition)[column]
+	const definitions = columnDefinitionsOf(tableDefinition)
+	return Object.hasOwn(definitions, column) ? definitions[column] : undefined
 }
 
 export function columnDefinitionsOf(tableDefinition: TableDefinition): Record<string, ColumnDefinition>
 {
-	return new ReflectClass(tableDefinition).property as Record<string, ColumnDefinition>
+	const context = new ReflectClass(tableDefinition)
+	return Object.fromEntries(Object.keys(context.propertyTypes).map(name => [name, new ReflectProperty(context, name)]))
 }
 
 export function columnOf(columnDefinition: ColumnDefinition): string
@@ -34,12 +36,17 @@ export function columnOf(columnDefinition: ColumnDefinition): string
 
 export function isCollection(columnDefinition: ColumnDefinition): boolean
 {
-	return columnDefinition.type instanceof CollectionType
+	return columnDefinition.relation?.targetMultiplicity === 'many'
 }
 
 export function isScalar(columnDefinition: ColumnDefinition): boolean
 {
-	return tableDefinitionOf(columnDefinition) === undefined
+	const relation = columnDefinition.relation
+	if (relation || (columnDefinition.type instanceof UnknownType)) {
+		tableDefinitionOf(columnDefinition)
+		return false
+	}
+	return true
 }
 
 export function rightColumnDefinitionOf(columnDefinition: ColumnDefinition): ColumnDefinition | undefined
@@ -47,18 +54,29 @@ export function rightColumnDefinitionOf(columnDefinition: ColumnDefinition): Col
 	const leftTableDefinition  = columnDefinition.class.type
 	const rightTableDefinition = tableDefinitionOf(columnDefinition)
 	if (!rightTableDefinition) return
-	for (const candidate of new ReflectClass(rightTableDefinition).properties) {
-		if (!compositeOf(rightTableDefinition, candidate.name)) continue
-		const candidateTableDefinition = tableDefinitionOf(candidate)
-		if (candidateTableDefinition && inherits(leftTableDefinition, candidateTableDefinition)) return candidate
+	const candidates = Object.values(columnDefinitionsOf(rightTableDefinition)).filter(candidate => {
+		if (!compositeOf(rightTableDefinition, candidate.name)) return false
+		const candidateType = tableDefinitionOf(candidate)
+		return candidateType && inherits(leftTableDefinition, candidateType)
+	})
+	if (candidates.length > 1) {
+		throw new RelationshipError('unsupported-relationship', String(columnDefinition.name))
 	}
+	return candidates[0]
 }
 
 export function tableDefinitionOf(columnDefinition: ColumnDefinition): TableDefinition | undefined
 {
-	const propertyType = columnDefinition.type
-	const type         = (propertyType instanceof CollectionType) ? propertyType.elementType.lead : propertyType.lead
-	return isAnyType(type) ? type : undefined
+	const relation = columnDefinition.relation
+	if (relation && !relation.target) {
+		throw new RelationshipError(
+			relation.targets.length ? 'ambiguous-type' : 'unsupported-relationship', String(columnDefinition.name)
+		)
+	}
+	if (columnDefinition.type instanceof UnknownType) {
+		throw new RelationshipError('unsupported-relationship', String(columnDefinition.name))
+	}
+	return relation?.target
 }
 
 export function tableOf(tableDefinition: TableDefinition): string

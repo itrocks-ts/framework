@@ -34,7 +34,6 @@ import { routeDependsOn }                   from '@itrocks/route'
 import { routeOf, routes }                  from '@itrocks/route'
 import { sqlBuildDependsOn }                from '@itrocks/sql-build'
 import { SqlFunction }                      from '@itrocks/sql-functions'
-import { sqlJoinDependsOn }                 from '@itrocks/sql-join'
 import { createDataSource }                 from '@itrocks/storage'
 import { storeDependsOn }                   from '@itrocks/store'
 import { storeOf }                          from '@itrocks/store'
@@ -52,15 +51,8 @@ import { join }                             from 'node:path'
 import { normalize }                        from 'node:path'
 import { configureLanguages }               from './language'
 import { ColumnDefinition }                 from './sql-join-dependencies'
-import { columnDefinitionOf }               from './sql-join-dependencies'
-import { columnDefinitionsOf }              from './sql-join-dependencies'
 import { columnOf }                         from './sql-join-dependencies'
-import { isCollection }                     from './sql-join-dependencies'
-import { isScalar }                         from './sql-join-dependencies'
-import { rightColumnDefinitionOf }          from './sql-join-dependencies'
-import { TableDefinition }                  from './sql-join-dependencies'
-import { tableDefinitionOf }                from './sql-join-dependencies'
-import { tableOf }                          from './sql-join-dependencies'
+import { bindSqlJoins }                     from './sql-relationships'
 
 async function propertyOutput<T extends object>(object: T, property: keyof T): Promise<string>
 {
@@ -139,22 +131,7 @@ export function bind()
 		columnOf
 	})
 
-	sqlJoinDependsOn<TableDefinition, ColumnDefinition>({
-		columnDefinitionOf,
-		columnDefinitionsOf,
-		columnOf,
-		componentOf,
-		isCollection,
-		isScalar,
-		requiredOf,
-		rightColumnDefinitionOf,
-		storedAsValueOf:         columnDefinition => {
-			const tableDefinition = tableDefinitionOf(columnDefinition)
-			return !!tableDefinition && !storeOf(tableDefinition)
-		},
-		tableDefinitionOf,
-		tableOf
-	})
+	bindSqlJoins()
 
 	storeDependsOn({
 		setTransformers: initStoreTransformers,

@@ -40,6 +40,7 @@
 		"@itrocks/property-view": "latest",
 		"@itrocks/real-viewport-height": "latest",
 		"@itrocks/reflect": "latest",
+		"@itrocks/reflect-path": "latest",
 		"@itrocks/rename": "latest",
 		"@itrocks/request-response": "latest",
 		"@itrocks/required": "latest",
@@ -55,8 +56,8 @@
 		"@itrocks/template-insight": "latest",
 		"@itrocks/transformer": "latest",
 		"@itrocks/translate": "latest",
-		"@itrocks/xtarget": "latest",
 		"@itrocks/uses": "latest",
+		"@itrocks/xtarget": "latest",
 		"air-datepicker": "^3.6",
 		"date-fns": "^4.1"
 	},
@@ -68,12 +69,16 @@
 	"engines": {
 		"node": ">=24"
 	},
-	"exports": "./cjs/framework.js",
+	"exports": {
+		".": "./cjs/framework.js",
+		"./sql-relationships": "./cjs/sql-relationships.js"
+	},
 	"files": [
 		"config.yaml",
 		"favicon.png",
 		"LICENSE",
 		"README.md",
+		"docs/sql-relationships.md",
 		"cjs",
 		"!*.map",
 		"*.csv",
@@ -103,7 +108,8 @@
 		"build": "npm run build:back && npm run build:front",
 		"build:back": "tsc",
 		"build:front": "tsc -p src/front/tsconfig.json && node -e \"const fs=require('node:fs');for(const file of fs.readdirSync('.').filter(file=>file.endsWith('.js')||file.endsWith('.d.ts')))fs.writeFileSync(file,fs.readFileSync(file,'utf8').replaceAll('../../',''))\"",
-		"test": "npm run build && node --test test/*.test.js"
+		"build:test": "tsc -p test/tsconfig.json",
+		"test": "npm run build && npm run build:test && node --test test/*.test.js test/*.test.mjs"
 	},
-	"version": "0.6.8"
+	"version": "0.7.0"
 }
