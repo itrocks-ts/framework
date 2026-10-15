@@ -299,3 +299,9 @@ async function renderProperty(object: any, name: string) {
 The public `@itrocks/framework/sql-relationships` subpath provides reflection/schema bindings for deterministic
 relationship graphs without starting the framework server. Normal bootstrap installs these bindings automatically.
 See [SQL relationship binding](docs/sql-relationships.md) for public hooks, inverse/link mappings and custom schemas.
+
+### SQL projection binding
+
+The server bootstrap binds MySQL projection conversion and SQL metadata through the public
+[`@itrocks/framework/sql-projection`](docs/sql-projection.md) subpath. Isolated adapters can use the same binding
+without importing the server bootstrap.

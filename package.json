@@ -71,6 +71,7 @@
 	},
 	"exports": {
 		".": "./cjs/framework.js",
+		"./sql-projection": "./cjs/sql-projection.js",
 		"./sql-relationships": "./cjs/sql-relationships.js"
 	},
 	"files": [
@@ -78,6 +79,7 @@
 		"favicon.png",
 		"LICENSE",
 		"README.md",
+		"docs/sql-projection.md",
 		"docs/sql-relationships.md",
 		"cjs",
 		"!*.map",
@@ -111,5 +113,5 @@
 		"build:test": "tsc -p test/tsconfig.json",
 		"test": "npm run build && npm run build:test && node --test test/*.test.js test/*.test.mjs"
 	},
-	"version": "0.7.0"
+	"version": "0.8.0"
 }

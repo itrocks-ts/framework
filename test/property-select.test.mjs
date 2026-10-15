@@ -116,3 +116,35 @@ test('singular inverse mappings preserve target multiplicity and require known o
 	assert.equal(graph.toSql(), 'LEFT JOIN `line` AS `t1` ON `t0`.`id` = `t1`.`invoice_id`')
 	sqlRelationshipsDependsOn({ mappingOf: () => undefined })
 })
+
+test('public projection binding applies final property SQL read and save transformers', async () => {
+	const { bindSqlProjection } = require('@itrocks/framework/sql-projection')
+	const { Mysql } = require('@itrocks/mysql')
+	const { READ, SAVE, SQL, setPropertyTransformer } = require('@itrocks/transformer')
+	bindSqlProjection()
+	setPropertyTransformer(City, 'name', SQL, SAVE, async (value, object, name) => {
+		assert.ok(object instanceof City)
+		assert.equal(name, 'name')
+		return value.toLowerCase()
+	})
+	setPropertyTransformer(City, 'name', SQL, READ, async (value, object, name, record) => {
+		assert.ok(object instanceof City)
+		assert.equal(name, 'name')
+		assert.equal(record.name, value)
+		return value.toUpperCase()
+	})
+	const queries = []
+	const dao = new Mysql({})
+	dao.connection = { query: async (sql, values) => {
+		queries.push({ sql, values })
+		if (sql.includes('COUNT(*)')) return [{ count: 1 }]
+		return [Object.fromEntries([...sql.matchAll(/`(t\d+)`\.`(\w+)` AS `(p\d+)`/g)]
+			.map(([, , column, alias]) => [alias, column === 'id' ? 1 : 'paris']))]
+	} }
+	const result = await dao.select(Invoice, ['billing.city.name'], { 'billing.city.name': 'PARIS' })
+	assert.equal(result.rows[0].cells[0].value, 'PARIS')
+	assert.equal(await dao.count(Invoice, { 'billing.city.name': 'PARIS' }), 1)
+	assert.deepEqual(queries.map(query => query.values), [['paris'], ['paris']])
+	await assert.rejects(() => dao.select(Invoice, ['ambiguous.name']), { code: 'ambiguous-type' })
+	assert.equal(queries.length, 2)
+})

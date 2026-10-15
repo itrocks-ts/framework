@@ -2,6 +2,7 @@ import { inherits }                from '@itrocks/class-type'
 import { componentOf }             from '@itrocks/composition'
 import { compositeOf }             from '@itrocks/composition'
 import { joinTableName }           from '@itrocks/mysql'
+import { PropertyPathError }       from '@itrocks/reflect-path'
 import { resolvePropertyPath }     from '@itrocks/reflect-path'
 import { toColumn }                from '@itrocks/rename'
 import { requiredOf }              from '@itrocks/required'
@@ -33,7 +34,14 @@ export function bindSqlJoins(): void
 {
 	sqlJoinDependsOn<TableDefinition, ColumnDefinition>({
 		columnDefinitionOf, columnDefinitionsOf, columnOf, componentOf, isCollection, isScalar,
-		multiplicityOf: property => resolvePropertyPath(property.class, [String(property.name)]).targetMultiplicity,
+		multiplicityOf: property => {
+			try { return resolvePropertyPath(property.class, [String(property.name)]).targetMultiplicity }
+			catch (error) {
+				if (!(error instanceof PropertyPathError)) throw error
+				throw new RelationshipError(error.code === 'ambiguous-type' ? 'ambiguous-type'
+					: error.code === 'invalid-path' ? 'invalid-path' : 'unsupported-relationship', error.path)
+			}
+		},
 		relationshipOf, requiredOf, rightColumnDefinitionOf,
 		storedAsValueOf: property => {
 			const target = tableDefinitionOf(property)

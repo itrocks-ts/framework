@@ -11,15 +11,11 @@ import { Type }                             from '@itrocks/class-type'
 import { classViewDependsOn }               from '@itrocks/class-view'
 import { representativeValueOf }            from '@itrocks/class-view'
 import { initCollection }                   from '@itrocks/collection'
-import { componentOf }                      from '@itrocks/composition'
 import { config }                           from '@itrocks/config'
 import { initCoreTransformers }             from '@itrocks/core-transformers'
 import { initStoreTransformers }            from '@itrocks/core-transformers'
-import { metadataNameOf }                   from '@itrocks/decorator/property'
 import { initFileTransformers }             from '@itrocks/file'
-import { PROTECT_GET }                      from '@itrocks/lazy-loading'
 import { initListProperties }               from '@itrocks/list-properties'
-import { mysqlDependsOn }                   from '@itrocks/mysql'
 import { passwordDependsOn }                from '@itrocks/password'
 import { setPasswordTransformers }          from '@itrocks/password/transformers'
 import { propertyTranslateDependsOn }       from '@itrocks/property-translate'
@@ -32,8 +28,6 @@ import { Headers }                          from '@itrocks/request-response'
 import { requiredOf }                       from '@itrocks/required'
 import { routeDependsOn }                   from '@itrocks/route'
 import { routeOf, routes }                  from '@itrocks/route'
-import { sqlBuildDependsOn }                from '@itrocks/sql-build'
-import { SqlFunction }                      from '@itrocks/sql-functions'
 import { createDataSource }                 from '@itrocks/storage'
 import { storeDependsOn }                   from '@itrocks/store'
 import { storeOf }                          from '@itrocks/store'
@@ -43,16 +37,14 @@ import { templateDependsOn }                from '@itrocks/template'
 import { Template }                         from '@itrocks/template-insight'
 import { applyTransformer }                 from '@itrocks/transformer'
 import { HTML, IGNORE }                     from '@itrocks/transformer'
-import { OUTPUT, READ, SAVE, SQL }          from '@itrocks/transformer'
+import { OUTPUT }                          from '@itrocks/transformer'
 import { lang }                             from '@itrocks/translate'
 import { tr }                               from '@itrocks/translate'
 import { format, parse }                    from 'date-fns'
 import { join }                             from 'node:path'
 import { normalize }                        from 'node:path'
 import { configureLanguages }               from './language'
-import { ColumnDefinition }                 from './sql-join-dependencies'
-import { columnOf }                         from './sql-join-dependencies'
-import { bindSqlJoins }                     from './sql-relationships'
+import { bindSqlProjection }                 from './sql-projection'
 
 async function propertyOutput<T extends object>(object: T, property: keyof T): Promise<string>
 {
@@ -93,27 +85,7 @@ export function bind()
 		setTransformers: setMultilineTransformers
 	})
 
-	mysqlDependsOn({
-		applyReadTransformer: async function(data, property, object) {
-			const value = await applyTransformer(data[property.toString()], object, property, SQL, READ, data)
-			if ((value !== IGNORE) && Reflect.getOwnMetadata(PROTECT_GET, object, metadataNameOf(property))) {
-				Reflect.deleteMetadata(PROTECT_GET, object, metadataNameOf(property))
-			}
-			return value
-		},
-		applySaveTransformer: async function(object, property, data) {
-			const value = Reflect.getMetadata(PROTECT_GET, object, metadataNameOf(property))
-				? (Object.hasOwn(object, property) ? object[property] : undefined)
-				: await object[property]
-			return applyTransformer(value, object, property, SQL, SAVE, data)
-		},
-		columnOf:               toColumn,
-		componentOf:            componentOf,
-		ignoreTransformedValue: IGNORE,
-		QueryFunction:          SqlFunction,
-		queryFunctionCall:      value => [value.value, value.sql],
-		storeOf:                storeOf
-	})
+	bindSqlProjection()
 
 	passwordDependsOn({
 		setTransformers: setPasswordTransformers
@@ -126,12 +98,6 @@ export function bind()
 	propertyTranslateDependsOn({
 		setTransformers: setPropertyTranslateTransformers
 	})
-
-	sqlBuildDependsOn<ColumnDefinition>({
-		columnOf
-	})
-
-	bindSqlJoins()
 
 	storeDependsOn({
 		setTransformers: initStoreTransformers,
