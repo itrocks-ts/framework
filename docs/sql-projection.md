@@ -19,5 +19,5 @@ The binding also supplies `toColumn` to sql-build and calls the public
 Ambiguous, unknown and invalid reflection paths are translated into relationship errors at the SQL boundary, then
 into the neutral selection errors by MySQL. Directly stored scalar object fields use the builder's metadata default.
 
-See [MySQL dependency configuration](https://github.com/itrocks-ts/mysql/blob/master/docs/dependencies.md) for the
+See [MySQL dependency configuration](https://github.com/itrocks-ts/mysql/blob/main/docs/dependencies.md) for the
 consumer-owned callbacks and [storage](https://github.com/itrocks-ts/storage) for the partial result contract.
