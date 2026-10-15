@@ -310,5 +310,6 @@ without importing the server bootstrap.
 
 The public [`@itrocks/framework/property-select`](docs/property-select.md) adapter serves authorised reflection
 metadata through real actions. Configure business roots and optional path grants, then supply request-specific
-access restrictions through [`propertySelectDependsOn`](docs/dependencies.md#property-metadata). The browser `property-select-metadata.js` entry provides
+access restrictions through [`propertySelectDependsOn`](docs/dependencies.md#property-metadata).
+The browser `property-select-metadata.js` entry provides
 `HttpMetadataProvider`, implementing the selector's neutral metadata port without loading server reflection.
