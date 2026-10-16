@@ -19,10 +19,13 @@ async function activate(entry: Entry): Promise<void>
 	if (!register || !entry.article.isConnected || mounted.has(entry.article)) return
 	loadCss('/@itrocks/property-select/front/property-select.css')
 	loadCss('/@itrocks/table/column-add.css')
+	const metadata = new HttpMetadataProvider()
 	let integration: ListPropertySelect | undefined
 	try {
+		const configuration = await metadata.configuration(entry.article.dataset.propertyRoot!)
+		if (!entry.article.isConnected || mounted.has(entry.article)) return
 		integration = new ListPropertySelect(entry.article, {
-			...entry.options, metadata: new HttpMetadataProvider(), templateUrl: '/property-select/template/html',
+			...entry.options, advice: configuration.advice, metadata, templateUrl: '/property-select/template/html',
 			mountSelector: (content, title) => register!(entry.article, content, title)
 		})
 		mounted.set(entry.article, integration)

@@ -313,3 +313,12 @@ metadata through real actions. Configure business roots and optional path grants
 access restrictions through [`propertySelectDependsOn`](docs/dependencies.md#property-metadata).
 The browser `property-select-metadata.js` entry provides
 `HttpMetadataProvider`, implementing the selector's neutral metadata port without loading server reflection.
+
+### Selector session composition
+
+Bootstrap binds list state transactions to the configured HTTP session store. Each list article receives its router
+identity; selector state and list column settings share durable session coordination while retaining separate
+namespaces.
+The browser obtains authorised root advice before mounting the selector and supplies the list session adapter.
+A stable configured `session.secret` is needed to recognise existing cookies after a server restart.
+See [property selector integration](docs/property-select.md) for metadata and root configuration.

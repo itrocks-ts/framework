@@ -2,7 +2,9 @@ import { Request }                     from '@itrocks/action-request'
 import { baseType }                    from '@itrocks/class-type'
 import { Type }                        from '@itrocks/class-type'
 import { config }                      from '@itrocks/config'
+import { sessionTransaction }          from '@itrocks/fastify'
 import { listDependsOn }               from '@itrocks/list'
+import { listStateDependsOn }          from '@itrocks/list/selector-state'
 import { normalisePath }               from '@itrocks/property-select'
 import { RootId }                      from '@itrocks/property-select'
 import { resolveDestination }          from '@itrocks/route'
@@ -31,6 +33,7 @@ export { ReflectionMetadataProvider }     from './property-select-provider'
 
 export function bindPropertySelect(): void
 {
+	listStateDependsOn({ transaction: sessionTransaction })
 	listDependsOn({ access: async request => {
 		const roots = (config.propertySelect as PropertySelectConfiguration | undefined)?.roots ?? {}
 		const root = Object.keys(roots).find(id => {
