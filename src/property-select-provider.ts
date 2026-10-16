@@ -8,6 +8,7 @@ import { normalisePath }                 from '@itrocks/property-select'
 import { ObjectContext }                 from '@itrocks/property-select'
 import { PropertyDescription }           from '@itrocks/property-select'
 import { resolveDestination }            from '@itrocks/route'
+import { tr }                            from '@itrocks/translate'
 import { createHash }                    from 'node:crypto'
 import { MetadataRoot }                  from './property-select'
 import { ReflectClass }                  from './reflect-class'
@@ -107,7 +108,7 @@ export class ReflectionMetadataProvider implements MetadataProvider
 		}
 		aborted(signal)
 		const { displayOf: classDisplay } = require('@itrocks/class-view') as typeof import('@itrocks/class-view')
-		return { label: classDisplay(target) || target.name, path, properties, type: typeId(target) }
+		return { label: tr(classDisplay(target) || target.name), path, properties, type: typeId(target) }
 	}
 
 	private description(
@@ -118,7 +119,7 @@ export class ReflectionMetadataProvider implements MetadataProvider
 		const property = new ReflectProperty(context, name as never)
 		const fact = property.relation
 		const description: PropertyDescription = {
-			kind: fact ? 'relation' : 'terminal', label: displayOf(context.type, name as never) || name,
+			kind: fact ? 'relation' : 'terminal', label: tr(displayOf(context.type, name as never) || name),
 			name, order: names.indexOf(name), path
 		}
 		if (!fact) return description

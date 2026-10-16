@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict'
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import test from 'node:test'
 
 const require = createRequire(import.meta.url)
@@ -33,6 +36,21 @@ Display('Reference')(Invoice.prototype, 'number')
 List('number')(MetadataInvoice)
 const roots = { configured: { type: '/node_modules/@itrocks/framework/test/fixtures/invoice:Invoice' },
 	direct: { type: Invoice }, invoice: { type: MetadataInvoice } }
+
+test('selector metadata translates dynamic class and property labels', async () => {
+	const directory = await mkdtemp(join(tmpdir(), 'property-select-labels-'))
+	try {
+		const file = join(directory, 'labels.csv')
+		await writeFile(file, 'metadata invoice;facture de métadonnées\nreference;référence\n')
+		const { trLoad, trWithLanguage } = require('@itrocks/translate')
+		await trLoad(file, 'fr-property-select-test')
+		const context = await trWithLanguage('fr-property-select-test', () =>
+			new ReflectionMetadataProvider(roots).context('invoice', ''))
+		assert.equal(context.label, 'facture de métadonnées')
+		assert.equal(context.properties.find(property => property.name === 'number').label, 'Référence')
+	}
+	finally { await rm(directory, { recursive: true, force: true }) }
+})
 
 test('routed business classes need no selector root registration', async () => {
 	const { bindPropertySelect, createMetadataProvider, metadataConfiguration } =
