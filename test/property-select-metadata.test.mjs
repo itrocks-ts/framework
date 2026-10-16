@@ -190,3 +190,46 @@ test('META-03 native dates stay terminal and context or method traversal rejects
 	assert.equal(require('./fixtures/metadata.js').metadataProbe.constructions, 0)
 	assert.equal(require('./fixtures/metadata.js').metadataProbe.reads, 0)
 })
+
+test('list bootstrap restores suggestions and saved search without browser metadata requests', async () => {
+	const { metadataBootstrap } = require('@itrocks/framework/property-select')
+	const { PropertySelect } = require('@itrocks/property-select')
+	const { HttpMetadataProvider } = await import('../property-select-metadata.js')
+	const { routes } = require('@itrocks/route')
+	const root = '/bootstrap-invoice'
+	routes.add(root, '/node_modules/@itrocks/framework/test/fixtures/metadata:MetadataInvoice')
+	const record = { revision: 7, state: {
+		branch: ['billing', 'city'], current: 1, query: 'name', recent: ['delivery', 'absent'],
+		scroll: { breadcrumb: { left: 25, top: 0 } }, version: 1
+	} }
+	const usedPaths = ['number', 'billing.city.name', 'delivery.city.name']
+	const initial = await metadataBootstrap({ route: root }, root, usedPaths, record)
+	assert.equal(initial.record.revision, 7)
+	assert.ok(initial.contexts.some(context => context.path === 'billing.city'))
+	assert.ok(initial.template.includes('ps-query'))
+	assert.deepEqual(initial.record.state.recent, ['delivery'])
+	const metadata = new HttpMetadataProvider({ initial: { ...initial, root }, fetch: async () => {
+		assert.fail('Mount must use metadata in the HTML response')
+	} })
+	const selector = new PropertySelect({
+		advice: initial.advice, metadata, root, stateKey: root, stateMode: 'session', usedPaths,
+		stateStore: {
+			read: async () => initial.record,
+			write: async () => assert.fail('Mount must not write selector state'),
+			remove: async () => assert.fail('Mount must not remove selector state')
+		}
+	})
+	try {
+		assert.equal(await selector.mount(), true)
+		if (selector.search.status === 'loading') await new Promise(resolve => {
+			const unsubscribe = selector.subscribe(() => {
+				if (selector.search.status === 'loading') return
+				unsubscribe()
+				resolve()
+			})
+		})
+		assert.deepEqual(selector.snapshot(), initial.record.state)
+		assert.ok(selector.search.results.some(result => result.property.path === 'billing.city.name'))
+	}
+	finally { selector.dispose() }
+})

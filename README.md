@@ -319,6 +319,7 @@ The browser `property-select-metadata.js` entry provides
 Bootstrap binds list state transactions to the configured HTTP session store. Each list article receives its router
 identity; selector state and list column settings share durable session coordination while retaining separate
 namespaces.
-The browser obtains authorised root advice before mounting the selector and supplies the list session adapter.
+The list HTML includes authorised selector metadata, advice, template and session state for mounting without
+additional application requests.
 A stable configured `session.secret` is needed to recognise existing cookies after a server restart.
 See [property selector integration](docs/property-select.md) for route-backed metadata and access.

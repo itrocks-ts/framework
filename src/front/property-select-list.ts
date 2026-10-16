@@ -1,6 +1,7 @@
 import { loadCss }                  from '@itrocks/asset-loader/asset-loader.js'
 import type { ListPropertySelect }  from '@itrocks/list/property-select.js'
 import type { ListSelectorOptions } from '@itrocks/list/property-select.js'
+import type { ObjectContext }       from '@itrocks/property-select/property-select.js'
 import { HttpMetadataProvider }     from './property-select-metadata.js'
 
 export type PaneRegistration = (
@@ -19,10 +20,16 @@ async function activate(entry: Entry): Promise<void>
 	if (!register || !entry.article.isConnected || mounted.has(entry.article)) return
 	loadCss('/@itrocks/property-select/front/property-select.css')
 	loadCss('/@itrocks/table/column-add.css')
-	const metadata = new HttpMetadataProvider()
+	const initial = entry.article.dataset.selectorBootstrap
+		? JSON.parse(decodeURIComponent(entry.article.dataset.selectorBootstrap)) as {
+			advice: string[]; contexts: ObjectContext[]; errors: [string, string][]
+		} : undefined
+	const metadata = new HttpMetadataProvider({
+		initial: initial && { ...initial, root: entry.article.dataset.propertyRoot! }
+	})
 	let integration: ListPropertySelect | undefined
 	try {
-		const configuration = await metadata.configuration(entry.article.dataset.propertyRoot!)
+		const configuration = initial ?? await metadata.configuration(entry.article.dataset.propertyRoot!)
 		if (!entry.article.isConnected || mounted.has(entry.article)) return
 		integration = new ListPropertySelect(entry.article, {
 			...entry.options, advice: configuration.advice, metadata, templateUrl: '/property-select/template/html',

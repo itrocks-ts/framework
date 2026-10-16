@@ -1,16 +1,20 @@
-import { Action }                      from '@itrocks/action'
-import { Request }                     from '@itrocks/action-request'
-import { baseType }                    from '@itrocks/class-type'
-import { isAnyType }                   from '@itrocks/class-type'
-import { Type }                        from '@itrocks/class-type'
-import { sessionTransaction }          from '@itrocks/fastify'
-import { listDependsOn }               from '@itrocks/list'
-import { listStateDependsOn }          from '@itrocks/list/selector-state'
-import { normalisePath }               from '@itrocks/property-select'
-import { RootId }                      from '@itrocks/property-select'
-import { routes }                      from '@itrocks/route'
-import { MetadataError }               from './property-select-provider'
-import { ReflectionMetadataProvider }  from './property-select-provider'
+import { Action }                     from '@itrocks/action'
+import { Request }                    from '@itrocks/action-request'
+import { Type }                       from '@itrocks/class-type'
+import { baseType }                   from '@itrocks/class-type'
+import { isAnyType }                  from '@itrocks/class-type'
+import { sessionTransaction }         from '@itrocks/fastify'
+import { listDependsOn }              from '@itrocks/list'
+import { listStateDependsOn }         from '@itrocks/list/selector-state'
+import { ObjectContext }              from '@itrocks/property-select'
+import { PropertySelect }             from '@itrocks/property-select'
+import { RootId }                     from '@itrocks/property-select'
+import { StateRecord }                from '@itrocks/property-select'
+import { normalisePath }              from '@itrocks/property-select'
+import { routes }                     from '@itrocks/route'
+import { readFile }                   from 'node:fs/promises'
+import { MetadataError }              from './property-select-provider'
+import { ReflectionMetadataProvider } from './property-select-provider'
 
 export type MetadataRoot = {
 	advice?: readonly string[]
@@ -46,7 +50,10 @@ export function bindPropertySelect(): void
 		if (!type || baseType(type) !== baseType(request.type)) return { authorise: async () => {} }
 		const provider = createMetadataProvider(request, root)
 		await provider.context(root, '')
-		return { authorise: async path => { await provider.resolve(root, path) }, root }
+		return {
+			authorise: async path => { await provider.resolve(root, path) },
+			bootstrap: (paths, state) => metadataBootstrap(request, root, paths, state), root
+		}
 	} })
 	// Loaded after composition; action classes never trigger the framework bootstrap.
 	routes.add('/property-select/template', '@itrocks/framework/property-select-actions:PropertySelectTemplate')
@@ -60,6 +67,53 @@ export function createMetadataProvider(request: Request, root: RootId = request.
 	const type = routeType(root)
 	const roots = type ? { [root]: { type } } : {}
 	return new ReflectionMetadataProvider(roots, (root, path) => dependencies.authorise(request, root, path))
+}
+
+/** Prepare only the contexts used by restoration, suggestions and the bounded saved search. */
+export async function metadataBootstrap(request: Request, root: RootId, usedPaths: string[], record: StateRecord)
+{
+	const provider = createMetadataProvider(request, root)
+	const configuration = await metadataConfiguration(request, root)
+	const contexts = new Map<string, ObjectContext>()
+	const errors = new Map<string, string>()
+	const selector = new PropertySelect({
+		advice: configuration.advice, root, stateKey: root, stateMode: 'session', usedPaths,
+		metadata: {
+			context: async (root, path, signal) => {
+				try {
+					const context = await provider.context(root, path, signal)
+					contexts.set(path, context)
+					return context
+				}
+				catch (error) {
+					errors.set(path, error instanceof Error ? error.message : 'Metadata unavailable')
+					throw error
+				}
+			},
+			resolve: (root, path, signal) => provider.resolve(root, path, signal)
+		},
+		stateStore: {
+			read: async () => record,
+			remove: async () => { throw new Error('Read-only bootstrap') },
+			write: async () => { throw new Error('Read-only bootstrap') }
+		}
+	})
+	try {
+		await selector.mount()
+		if (selector.search.status === 'loading') await new Promise<void>(resolve => {
+			const unsubscribe = selector.subscribe(() => {
+				if (selector.search.status === 'loading') return
+				unsubscribe()
+				resolve()
+			})
+		})
+		return {
+			...configuration, contexts: [...contexts.values()], errors: [...errors],
+			record: { ...record, state: selector.snapshot() },
+			template: await readFile(require.resolve('@itrocks/property-select/front/property-select.html'), 'utf8')
+		}
+	}
+	finally { selector.dispose() }
 }
 
 export async function metadataConfiguration(request: Request, root: RootId)

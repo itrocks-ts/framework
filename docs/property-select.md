@@ -89,7 +89,8 @@ const context = await metadata.context('/invoice', '')
 const configuration = await metadata.configuration('/invoice')
 ```
 
-Options accept `endpoint` (default `/property-select`) and a substitutable `fetch` function.
+Options accept `endpoint` (default `/property-select`), a substitutable `fetch` function and an optional
+`initial: { root, contexts, errors }` snapshot. The snapshot supplies authorised metadata for the current list response.
 Requests use same-origin credentials and forward `AbortSignal`. A cancelled response is also checked after JSON
 parsing. The selector's generation checks discard obsolete responses even when the network cannot be interrupted.
 Session restoration, rendered controls, searching and host column integration belong to their respective adapters.
@@ -121,5 +122,9 @@ The `/property-select/template/html` action serves only the selector's exported 
 arbitrary HTML asset access. The view's optional template URL allows this transport while standalone hosts retain the
 adjacent static template. Neither the view nor list imports server framework code.
 
-Selector state remains mounted-instance state at this stage; list columns retain their existing request-session
-persistence. The selector session transaction and external pointer transport have separate contracts and deliveries.
+The list access adapter supplies a request-scoped bootstrap. `metadataBootstrap(request, root, usedPaths, record)`
+prepares the contexts needed by the restored branch, suggestions and bounded saved search, together with the selector
+template and validated state. No business records are read. List adds the authoritative session revision and generation
+to its encoded `data-selector-bootstrap` attribute. The browser consumes this response without configuration,
+metadata, template or state requests on mount. New navigation and searches can fetch additional contexts lazily.
+Column removal and reordering reuse existing contexts and cells; only configuration persistence requires a request.

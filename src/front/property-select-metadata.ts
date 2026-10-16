@@ -5,6 +5,7 @@ import type { PropertyDescription } from '@itrocks/property-select/property-sele
 export type MetadataTransportOptions = {
 	endpoint?: string
 	fetch?: typeof fetch
+	initial?: { contexts: ObjectContext[]; errors: [string, string][]; root: string }
 }
 
 export class HttpMetadataProvider implements MetadataProvider
@@ -12,9 +13,11 @@ export class HttpMetadataProvider implements MetadataProvider
 
 	private readonly endpoint: string
 	private readonly fetcher: typeof fetch
+	private readonly initial?: MetadataTransportOptions['initial']
 
 	constructor(options: MetadataTransportOptions = {})
 	{
+		this.initial = options.initial
 		this.endpoint = options.endpoint ?? '/property-select'
 		this.fetcher = options.fetch ?? globalThis.fetch.bind(globalThis)
 	}
@@ -26,6 +29,13 @@ export class HttpMetadataProvider implements MetadataProvider
 
 	context(root: string, path: string, signal?: AbortSignal): Promise<ObjectContext>
 	{
+		signal?.throwIfAborted()
+		if (this.initial?.root === root) {
+			const context = this.initial.contexts.find(context => context.path === path)
+			if (context) return Promise.resolve(structuredClone(context))
+			const error = this.initial.errors.find(([failed]) => failed === path)
+			if (error) return Promise.reject(new Error(error[1]))
+		}
 		return this.request('context', root, path, signal)
 	}
 
