@@ -1,35 +1,18 @@
 # Authorised property metadata
 
 The server subpath `@itrocks/framework/property-select` exposes `ReflectionMetadataProvider`, `MetadataError`,
-`MetadataErrorCode`, `MetadataRoot`, `PropertySelectConfiguration`, `PropertySelectDependencies`,
+`MetadataErrorCode`, `MetadataRoot`, `PropertySelectDependencies`,
 `createMetadataProvider`, `metadataConfiguration`, `propertySelectDependsOn` and `bindPropertySelect`.
 Normal bootstrap binds its routes after reflection composition. `ReflectionMetadataProvider` implements the
 `MetadataProvider` port from `@itrocks/property-select`.
 
-## Configuration and access
+## Routes and access
 
-No metadata root is available by default. Register each permitted business root in application configuration:
-
-```yaml
-propertySelect:
-  roots:
-    invoice:
-      type: '/business/invoice:Invoice'
-      version: '1'
-      advice:
-        - customer.address
-      paths:
-        - number
-        - customer.address.city.name
-```
-
-`type` is a configured module destination with optional export name, or a class supplied by an initializer.
-A leading `/` denotes the application directory; package destinations use their public module specifier.
-The request supplies an opaque registered root id; it cannot supply a module or class name.
-Omitting `paths` permits the root's reflected catalogue. An explicit list grants those complete paths and their
-navigation prefixes. It does not grant every descendant of a relation. The catalogue includes inherited fields
-and accessible fields beyond the initial `List` columns. Increment `version` when its grants or metadata change;
-recreate a cached selector instance when switching catalogue snapshots.
+Every business class exposed by a route is available to the selector without a `propertySelect.roots` setting.
+For example, a `/invoice` route to an `Invoice` class makes `/invoice` the selector root. The framework resolves
+that URL through `@itrocks/route` on each request; an unknown route or one resolving to an action is forbidden.
+The browser never supplies a module destination or class name. The catalogue includes inherited fields and
+accessible fields beyond the initial `List` columns.
 
 The normal action access policy also applies to these routes. Add request-specific restrictions after framework
 binding and before server startup, through `beforeFrameworkRun`:
@@ -44,15 +27,19 @@ propertySelectDependsOn({
 })
 ```
 
-The callback receives the current action request and every traversed prefix, including `''` for the root.
-It must grant root and ancestor navigation as well as the destination. Its default permits configured roots and
-paths under the existing action access policy. There is no global cache of user access decisions.
+The callback receives the current action request, the route URL and every traversed prefix, including `''` for the
+root. It must grant root and ancestor navigation as well as the destination. Its default permits every routed
+business class under the existing action access policy. There is no global cache of user access decisions.
 Partial dependency binding preserves unspecified defaults. Both enumeration and complete-path resolution apply
-these same checks before resolving forbidden prefixes. Unregistered roots and denied paths return an identical
+these same checks before resolving forbidden prefixes. Unknown roots and denied paths return an identical
 `403 { error: 'forbidden' }` response.
 
-`createMetadataProvider(request)` constructs a provider for that request. Direct construction accepts a root map
-and an asynchronous `(root, path) => boolean` policy, useful for adapters with another request abstraction.
+An optional `advice(request, root)` dependency may return suggested relation paths. The framework validates each
+suggestion against the same access policy before sending it to the browser. No advice is required for availability.
+
+`createMetadataProvider(request, root?)` constructs a provider for that request and route URL; `root` defaults to
+`request.route`. Direct construction accepts a root map and an asynchronous `(root, path) => boolean` policy, useful
+for adapters with another request abstraction. Direct root maps may narrow paths without changing framework routes.
 It requires the usual framework reflection composition before use; missing composition fails explicitly.
 Framework `ReflectClass.propertyNames` enumerates declared types and prototype getter descriptors without
 constructing domain records. Metadata uses declared property types, never getters or property values.
@@ -82,13 +69,13 @@ perform no SQL and never read `ReflectProperty.value`. Lazy search and cycle-ret
 
 The real framework actions expose these GET endpoints:
 
-- `/property-select/context/json?root=invoice&path=customer.address`
-- `/property-select/resolve/json?root=invoice&path=customer.address.city.name`
-- `/property-select/configuration/json?root=invoice`
+- `/property-select/context/json?root=%2Finvoice&path=customer.address`
+- `/property-select/resolve/json?root=%2Finvoice&path=customer.address.city.name`
+- `/property-select/configuration/json?root=%2Finvoice`
 
 Responses are JSON with `Cache-Control: no-store`. Invalid requests or paths return `400`; denied access returns `403`.
-The configuration response contains only authorised, valid relation advice and the configured catalogue version.
-Advice is static root configuration; the adapter has no recommendation or persistence engine.
+The configuration response contains only authorised, valid relation advice and catalogue version `1`.
+Advice comes from the optional dependency; the adapter has no recommendation or persistence engine.
 
 The public browser subpath `@itrocks/framework/property-select-metadata.js` exports `HttpMetadataProvider` and
 `MetadataTransportOptions`. The normal browser composition root exposes the adapter and registers its asset.
@@ -98,8 +85,8 @@ Its import has no activation or server side effect:
 import { HttpMetadataProvider } from '@itrocks/framework/property-select-metadata.js'
 
 const metadata = new HttpMetadataProvider()
-const context = await metadata.context('invoice', '')
-const configuration = await metadata.configuration('invoice')
+const context = await metadata.context('/invoice', '')
+const configuration = await metadata.configuration('/invoice')
 ```
 
 Options accept `endpoint` (default `/property-select`) and a substitutable `fetch` function.
@@ -128,7 +115,7 @@ Only articles carrying an authorised `data-property-root` mount the selector. Dy
 views, aborts their pending requests and removes their pane registration. Metadata requests use `HttpMetadataProvider`;
 list requests keep their own scope, data source and projection/rendering responsibility.
 
-Server binding matches configured roots against the base business class, including anonymous framework wrappers.
+Server binding uses the list's route URL and verifies its resolved business class, including anonymous wrappers.
 The same per-request metadata policy authorises projection paths and every representative dependency, before querying.
 The `/property-select/template/html` action serves only the selector's exported HTML fragment. It does not enable
 arbitrary HTML asset access. The view's optional template URL allows this transport while standalone hosts retain the

@@ -34,6 +34,24 @@ List('number')(MetadataInvoice)
 const roots = { configured: { type: '/node_modules/@itrocks/framework/test/fixtures/invoice:Invoice' },
 	direct: { type: Invoice }, invoice: { type: MetadataInvoice } }
 
+test('routed business classes need no selector root registration', async () => {
+	const { bindPropertySelect, createMetadataProvider, metadataConfiguration } =
+		require('@itrocks/framework/property-select')
+	const { routes } = require('@itrocks/route')
+	routes.add('/metadata-invoice', '/node_modules/@itrocks/framework/test/fixtures/metadata:MetadataInvoice')
+	routes.add('/metadata-line', '/node_modules/@itrocks/framework/test/fixtures/line:Line')
+	bindPropertySelect()
+	const request = { route: '/metadata-invoice' }
+	const invoice = await createMetadataProvider(request).context('/metadata-invoice', '')
+	const line = await createMetadataProvider(request, '/metadata-line').context('/metadata-line', '')
+	assert.ok(invoice.properties.some(property => property.name === 'number'))
+	assert.ok(line.properties.some(property => property.name === 'amount'))
+	assert.deepEqual(await metadataConfiguration(request, '/metadata-invoice'), { advice: [], version: '1' })
+	await assert.rejects(createMetadataProvider(request, '/missing').context('/missing', ''), { code: 'forbidden' })
+	await assert.rejects(createMetadataProvider(request, '/property-select/template')
+		.context('/property-select/template', ''), { code: 'forbidden' })
+})
+
 // Every assertion below uses public ports and actual composed metadata; no business record is constructed.
 test('META-01 metadata relation facts, inheritance and logical inverse/N-N are serialisable', async () => {
 	const provider = new ReflectionMetadataProvider(roots)

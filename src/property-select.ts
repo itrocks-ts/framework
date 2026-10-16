@@ -1,13 +1,13 @@
+import { Action }                      from '@itrocks/action'
 import { Request }                     from '@itrocks/action-request'
 import { baseType }                    from '@itrocks/class-type'
+import { isAnyType }                   from '@itrocks/class-type'
 import { Type }                        from '@itrocks/class-type'
-import { config }                      from '@itrocks/config'
 import { sessionTransaction }          from '@itrocks/fastify'
 import { listDependsOn }               from '@itrocks/list'
 import { listStateDependsOn }          from '@itrocks/list/selector-state'
 import { normalisePath }               from '@itrocks/property-select'
 import { RootId }                      from '@itrocks/property-select'
-import { resolveDestination }          from '@itrocks/route'
 import { routes }                      from '@itrocks/route'
 import { MetadataError }               from './property-select-provider'
 import { ReflectionMetadataProvider }  from './property-select-provider'
@@ -20,12 +20,18 @@ export type MetadataRoot = {
 }
 
 export type PropertySelectDependencies = {
+	advice: (request: Request, root: RootId) => readonly string[] | Promise<readonly string[]>
 	authorise: (request: Request, root: RootId, path: string) => boolean | Promise<boolean>
 }
 
-export type PropertySelectConfiguration = { roots?: Readonly<Record<RootId, MetadataRoot>> }
+const dependencies: PropertySelectDependencies = { advice: () => [], authorise: () => true }
 
-const dependencies: PropertySelectDependencies = { authorise: () => true }
+function routeType(root: RootId): Type | undefined
+{
+	if (!root.startsWith('/')) return
+	const type = routes.resolve(root)
+	return isAnyType(type) && type !== Action && !(type.prototype instanceof Action) ? type : undefined
+}
 
 export { MetadataError }                 from './property-select-provider'
 export type { MetadataErrorCode }         from './property-select-provider'
@@ -35,14 +41,10 @@ export function bindPropertySelect(): void
 {
 	listStateDependsOn({ transaction: sessionTransaction })
 	listDependsOn({ access: async request => {
-		const roots = (config.propertySelect as PropertySelectConfiguration | undefined)?.roots ?? {}
-		const root = Object.keys(roots).find(id => {
-			const type = roots[id].type
-			const resolved = typeof type === 'string' ? resolveDestination(type) : type
-			return typeof resolved === 'function' && baseType(resolved as Type) === baseType(request.type)
-		})
-		if (!root) return { authorise: async () => {} }
-		const provider = createMetadataProvider(request)
+		const root = request.route
+		const type = routeType(root)
+		if (!type || baseType(type) !== baseType(request.type)) return { authorise: async () => {} }
+		const provider = createMetadataProvider(request, root)
 		await provider.context(root, '')
 		return { authorise: async path => { await provider.resolve(root, path) }, root }
 	} })
@@ -53,20 +55,20 @@ export function bindPropertySelect(): void
 	routes.add('/property-select/resolve', '@itrocks/framework/property-select-actions:MetadataResolve')
 }
 
-export function createMetadataProvider(request: Request): ReflectionMetadataProvider
+export function createMetadataProvider(request: Request, root: RootId = request.route): ReflectionMetadataProvider
 {
-	const roots = (config.propertySelect as PropertySelectConfiguration | undefined)?.roots ?? {}
+	const type = routeType(root)
+	const roots = type ? { [root]: { type } } : {}
 	return new ReflectionMetadataProvider(roots, (root, path) => dependencies.authorise(request, root, path))
 }
 
 export async function metadataConfiguration(request: Request, root: RootId)
 	: Promise<{ advice: readonly string[]; version: string }>
 {
-	const provider = createMetadataProvider(request)
+	const provider = createMetadataProvider(request, root)
 	await provider.context(root, '')
-	const source = (config.propertySelect as PropertySelectConfiguration).roots![root]
 	const advice: string[] = []
-	for (const path of source.advice ?? []) {
+	for (const path of await dependencies.advice(request, root)) {
 		try {
 			const canonical = normalisePath(path)
 			if (!canonical) continue
@@ -77,7 +79,7 @@ export async function metadataConfiguration(request: Request, root: RootId)
 			if (!(error instanceof MetadataError) && !(error instanceof TypeError)) throw error
 		}
 	}
-	return { advice: [...new Set(advice)], version: source.version ?? '1' }
+	return { advice: [...new Set(advice)], version: '1' }
 }
 
 export function propertySelectDependsOn(overrides: Partial<PropertySelectDependencies>): void

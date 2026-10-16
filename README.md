@@ -309,8 +309,8 @@ without importing the server bootstrap.
 ### Authorised property metadata
 
 The public [`@itrocks/framework/property-select`](docs/property-select.md) adapter serves authorised reflection
-metadata through real actions. Configure business roots and optional path grants, then supply request-specific
-access restrictions through [`propertySelectDependsOn`](docs/dependencies.md#property-metadata).
+metadata through real actions. Every routed business class is available without a selector root declaration.
+Supply request-specific path restrictions through [`propertySelectDependsOn`](docs/dependencies.md#property-metadata).
 The browser `property-select-metadata.js` entry provides
 `HttpMetadataProvider`, implementing the selector's neutral metadata port without loading server reflection.
 
@@ -321,4 +321,4 @@ identity; selector state and list column settings share durable session coordina
 namespaces.
 The browser obtains authorised root advice before mounting the selector and supplies the list session adapter.
 A stable configured `session.secret` is needed to recognise existing cookies after a server restart.
-See [property selector integration](docs/property-select.md) for metadata and root configuration.
+See [property selector integration](docs/property-select.md) for route-backed metadata and access.

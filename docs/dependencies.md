@@ -8,9 +8,10 @@ The framework supplies adapters to consumer-owned contracts through public packa
 `propertySelectDependsOn(overrides: Partial<PropertySelectDependencies>)`, exported from
 `@itrocks/framework/property-select`, merges overrides without removing unspecified defaults.
 Its `authorise(request, root, path)` function returns a boolean or a promise of one. The default returns true for
-explicitly configured roots and their configured path grants, under the existing framework action access policy.
-No roots are configured by default. Each new action gets its own request-bound provider; user access is never cached
-globally. The adapter checks the root and all ancestor prefixes before resolving a complete path.
+every routed business class under the existing framework action access policy. The root is that class's route URL,
+such as `/invoice`; no separate selector registration is needed. Each action gets its own request-bound provider;
+user access is never cached globally. The adapter checks the root and all ancestor prefixes before resolving a
+complete path. Optional `advice(request, root)` returns suggested relation paths; its default is empty.
 
 Applications supply policy after composition and dependency binding, before requests start:
 
@@ -35,7 +36,8 @@ Presentation uses [`class-view`](../../class-view/README.md) labels and
 [`property-view`](../../property-view/README.md) labels/order. Module destinations use
 [`route`](../../route/README.md#api); the HTTP adapter uses `Action.jsonResponse` and `Request.data`.
 Presentation/path owners are loaded when used, after export composition, so importing the binding API early does not
-freeze their reflection defaults. See [authorised metadata](property-select.md) for roots, advice, DTOs and browser use.
+freeze their reflection defaults. See [authorised metadata](property-select.md) for route-backed roots, advice, DTOs
+and browser use.
 
 ## SQL adapters
 

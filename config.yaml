@@ -2,9 +2,6 @@ compose:
   '@itrocks/reflect:ReflectClass':    '@itrocks/framework:ReflectClass'
   '@itrocks/reflect:ReflectProperty': '@itrocks/framework:ReflectProperty'
 
-propertySelect:
-  roots: {}
-
 server:
   host: 127.0.0.1
   port: 3000

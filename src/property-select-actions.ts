@@ -21,7 +21,7 @@ abstract class MetadataAction extends Action
 		if ((request.request.method !== 'GET') || request.ids.length || typeof root !== 'string' || !root
 			|| typeof path !== 'string') return this.jsonResponse({ error: 'invalid-request' }, 400, headers)
 		try {
-			const provider = createMetadataProvider(request)
+			const provider = createMetadataProvider(request, root)
 			const result = this.operation === 'configuration' ? await metadataConfiguration(request, root)
 				: await provider[this.operation](root, path)
 			return this.jsonResponse(result, 200, headers)

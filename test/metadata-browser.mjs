@@ -17,37 +17,41 @@ try {
 	})
 	await page.goto(origin + '/country?offset=0')
 	assert.match(await page.locator('body').innerText(), /Recipe France/)
+	assert.equal(await page.locator('article[data-property-root]').getAttribute('data-property-root'), '/country')
 	const observed = await page.evaluate(async () => {
+		const rootId = '/metadata-invoice'
 		const { HttpMetadataProvider } = await import('/@itrocks/framework/property-select-metadata.js')
 		const { PropertySelect } = await import('/@itrocks/property-select/property-select.js')
 		const provider = new HttpMetadataProvider()
-		const context = await provider.context('invoice', '')
-		const root = await provider.resolve('invoice', '')
-		const deep = await provider.resolve('invoice', 'billing.city.name')
-		const tags = await provider.resolve('invoice', 'tags')
-		const reverse = await provider.resolve('invoice', 'tags.invoices')
-		const cycle = await provider.resolve('invoice', 'tags.invoices.tags.label')
-		const configuration = await provider.configuration('invoice')
+		const context = await provider.context(rootId, '')
+		const root = await provider.resolve(rootId, '')
+		const deep = await provider.resolve(rootId, 'billing.city.name')
+		const tags = await provider.resolve(rootId, 'tags')
+		const reverse = await provider.resolve(rootId, 'tags.invoices')
+		const cycle = await provider.resolve(rootId, 'tags.invoices.tags.label')
+		const configuration = await provider.configuration(rootId)
+		const otherClass = await provider.context('/metadata-line', '')
 		const status = async (operation, root, path, extra = '') => {
 			const response = await fetch(`/property-select/${operation}/json?` + new URLSearchParams({ path, root }) + extra)
 			return { cache: response.headers.get('Cache-Control'), status: response.status, value: await response.json() }
 		}
-		const forbidden = await status('resolve', 'invoice', 'hidden')
-		const forbiddenAncestor = await status('resolve', 'invoice', 'billing.city.name', '&catalogue=restricted')
-		const restricted = await status('context', 'invoice', '', '&catalogue=restricted')
-		const restrictedAdvice = await status('configuration', 'invoice', '', '&catalogue=restricted')
+		const forbidden = await status('resolve', rootId, 'hidden')
+		const forbiddenAncestor = await status('resolve', rootId, 'billing.city.name', '&catalogue=restricted')
+		const restricted = await status('context', rootId, '', '&catalogue=restricted')
+		const restrictedAdvice = await status('configuration', rootId, '', '&catalogue=restricted')
 		const absentRoot = await status('context', 'absent', '')
-		const ambiguous = await status('resolve', 'invoice', 'ambiguous.name')
-		const malformed = await status('resolve', 'invoice', 'billing..city')
-		const terminal = await status('context', 'invoice', 'number')
-		const method = await fetch('/property-select/context/json?root=invoice', { method: 'POST' })
+		const actionRoot = await status('context', '/property-select/template', '')
+		const ambiguous = await status('resolve', rootId, 'ambiguous.name')
+		const malformed = await status('resolve', rootId, 'billing..city')
+		const terminal = await status('context', rootId, 'number')
+		const method = await fetch('/property-select/context/json?root=%2Fmetadata-invoice', { method: 'POST' })
 		const cancel = new AbortController()
 		const cancellable = new HttpMetadataProvider({ fetch: (input, options) => {
 			const url = new URL(input, location.href)
 			url.searchParams.set('delay', '180')
 			return fetch(url, options)
 		} })
-		const pending = cancellable.context('invoice', 'billing', cancel.signal)
+		const pending = cancellable.context(rootId, 'billing', cancel.signal)
 		await new Promise(resolve => setTimeout(resolve, 30))
 		cancel.abort()
 		let aborted = false
@@ -64,7 +68,7 @@ try {
 			// The real network completes despite client cancellation, exercising late-result rejection.
 			return fetch(url, { ...options, signal: undefined })
 		} })
-		const selector = new PropertySelect({ metadata: delayed, root: 'invoice' })
+		const selector = new PropertySelect({ metadata: delayed, root: rootId })
 		await selector.mount()
 		const old = selector.navigate('billing')
 		await entered
@@ -73,9 +77,9 @@ try {
 		const committed = selector.path
 		selector.dispose()
 		const probe = await fetch('/property-select-probe/probe/json').then(response => response.json())
-		return { aborted, absentRoot, ambiguous, committed, configuration, context, cycle, deep, forbidden,
+		return { aborted, absentRoot, actionRoot, ambiguous, committed, configuration, context, cycle, deep, forbidden,
 			forbiddenAncestor, malformed, method: method.status, newer, probe, restricted, restrictedAdvice,
-			reverse, root, stale, tags, terminal }
+			reverse, root, stale, tags, terminal, otherClass }
 	})
 	assert.equal(observed.context.properties[0].label, 'Invoice reference')
 	assert.ok(observed.context.properties.some(property => property.name === 'delivery'))
@@ -85,15 +89,16 @@ try {
 	assert.equal(observed.tags.relation.cardinality, 'many-to-many')
 	assert.equal(observed.reverse.relation.inverse, observed.tags.relation.id)
 	assert.equal(observed.cycle.path, 'tags.invoices.tags.label')
-	assert.deepEqual(observed.configuration, { advice: ['billing', 'tags'], version: 'fixture-1' })
-	for (const name of ['forbidden', 'forbiddenAncestor', 'absentRoot']) {
+	assert.deepEqual(observed.configuration, { advice: ['billing', 'tags'], version: '1' })
+	assert.ok(observed.otherClass.properties.some(property => property.name === 'amount'))
+	for (const name of ['forbidden', 'forbiddenAncestor', 'absentRoot', 'actionRoot']) {
 		assert.equal(observed[name].status, 403, name)
 		assert.deepEqual(observed[name].value, { error: 'forbidden' })
 		assert.equal(observed[name].cache, 'no-store')
 	}
 	assert.equal(observed.restricted.status, 200)
 	assert.equal(observed.restricted.value.properties.some(property => property.name === 'billing'), false)
-	assert.deepEqual(observed.restrictedAdvice.value, { advice: ['tags'], version: 'fixture-1' })
+	assert.deepEqual(observed.restrictedAdvice.value, { advice: ['tags'], version: '1' })
 	assert.equal(observed.ambiguous.status, 400)
 	assert.equal(observed.ambiguous.value.error, 'ambiguous-type')
 	assert.equal(observed.malformed.status, 400)

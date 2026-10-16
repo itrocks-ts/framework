@@ -1,7 +1,6 @@
 const { Action } = require('@itrocks/action')
 const { File } = require('@itrocks/class-file')
 const { Display: ClassDisplay } = require('@itrocks/class-view')
-const { config } = require('@itrocks/config')
 const { List } = require('@itrocks/list-properties')
 const { Display, DisplayOrder } = require('@itrocks/property-view')
 const { routes } = require('@itrocks/route')
@@ -31,9 +30,8 @@ ClassDisplay('Invoice catalogue')(MetadataInvoice)
 Display('Invoice reference')(Invoice.prototype, 'number')
 DisplayOrder('number', 'billing', 'delivery', 'lines', 'tags')(MetadataInvoice)
 List('number')(MetadataInvoice)
-config.propertySelect = { roots: { invoice: { advice: ['billing', 'hidden', 'tags', 'absent', 'billing..city'],
-	type: MetadataInvoice, version: 'fixture-1' }, unknown: { type: Invoice } } }
-propertySelectDependsOn({ authorise: async (request, root, path) => {
+propertySelectDependsOn({ advice: () => ['billing', 'hidden', 'tags', 'absent', 'billing..city'],
+	authorise: async (request, root, path) => {
 	// Synthetic request-scoped policy, deliberately observable only through real HTTP in the browser suite.
 	if (request.data.delay && path === 'billing') {
 		await new Promise(resolve => setTimeout(resolve, Number(request.data.delay)))
@@ -61,4 +59,6 @@ class MetadataProbe extends Action
 
 }
 routes.add('/property-select-probe/probe', '/node_modules/@itrocks/framework/test/metadata-fixture.cjs:MetadataProbe')
+routes.add('/metadata-invoice', '/node_modules/@itrocks/framework/test/fixtures/metadata:MetadataInvoice')
+routes.add('/metadata-line', '/node_modules/@itrocks/framework/test/fixtures/line:Line')
 module.exports = { ...models, MetadataProbe }
