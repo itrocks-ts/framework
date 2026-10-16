@@ -70,8 +70,8 @@ Logical inverses and N-N targets are navigable without exposing or loading link 
 come from reflection. Component/composite declarations add an inverse only when exactly one opposite ownership
 property matches; cardinality is inferred only for a known singular/plural pair. Unknown facts remain unknown.
 Native `Date` properties, including nullable and optional dates, are terminal and remain selectable.
-Requesting a known terminal property as a context rejects with `MetadataError('invalid-path')`; native Date method traversal
-also rejects as `invalid-path`. Both become HTTP `400 { error: 'invalid-path' }`, without enumerating native classes.
+Requesting a known terminal property as a context rejects with `MetadataError('invalid-path')`. Native Date method
+traversal also rejects as `invalid-path`. Both become HTTP `400 { error: 'invalid-path' }`, without enumerating native classes.
 Ambiguous traversal, missing properties, terminal traversal and unknown targets reject explicitly.
 
 Both methods honour `AbortSignal` before work and after awaited policy decisions. They load no business records,
