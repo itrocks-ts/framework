@@ -148,3 +148,16 @@ test('public projection binding applies final property SQL read and save transfo
 	await assert.rejects(() => dao.select(Invoice, ['ambiguous.name']), { code: 'ambiguous-type' })
 	assert.equal(queries.length, 2)
 })
+
+test('selector template route serves only its published fragment', async () => {
+	const { bindPropertySelect } = require('@itrocks/framework/property-select')
+	const { PropertySelectTemplate } = require('@itrocks/framework/property-select-actions')
+	bindPropertySelect()
+	const response = await new PropertySelectTemplate().html()
+	assert.equal(response.statusCode, 200)
+	assert.match(response.body, /class="property-select"/)
+	assert.doesNotMatch(response.body, /<html/)
+	const { routes } = require('@itrocks/route')
+	assert.equal(routes.destination('/property-select/template'),
+		'@itrocks/framework/property-select-actions:PropertySelectTemplate')
+})

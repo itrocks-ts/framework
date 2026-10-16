@@ -1,5 +1,6 @@
 import { Action }                 from '@itrocks/action'
 import { Request }                from '@itrocks/action-request'
+import { readFile }               from 'node:fs/promises'
 import { createMetadataProvider } from './property-select'
 import { metadataConfiguration }  from './property-select'
 import { MetadataError }          from './property-select-provider'
@@ -54,5 +55,16 @@ export class MetadataResolve extends MetadataAction
 {
 
 	protected operation = 'resolve' as const
+
+}
+
+export class PropertySelectTemplate extends Action
+{
+
+	async html()
+	{
+		const template = require.resolve('@itrocks/property-select/front/property-select.html')
+		return this.htmlResponse(await readFile(template, 'utf8'))
+	}
 
 }

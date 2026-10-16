@@ -1,8 +1,11 @@
 import { Request }                     from '@itrocks/action-request'
+import { baseType }                    from '@itrocks/class-type'
 import { Type }                        from '@itrocks/class-type'
 import { config }                      from '@itrocks/config'
+import { listDependsOn }               from '@itrocks/list'
 import { normalisePath }               from '@itrocks/property-select'
 import { RootId }                      from '@itrocks/property-select'
+import { resolveDestination }          from '@itrocks/route'
 import { routes }                      from '@itrocks/route'
 import { MetadataError }               from './property-select-provider'
 import { ReflectionMetadataProvider }  from './property-select-provider'
@@ -28,7 +31,20 @@ export { ReflectionMetadataProvider }     from './property-select-provider'
 
 export function bindPropertySelect(): void
 {
+	listDependsOn({ access: async request => {
+		const roots = (config.propertySelect as PropertySelectConfiguration | undefined)?.roots ?? {}
+		const root = Object.keys(roots).find(id => {
+			const type = roots[id].type
+			const resolved = typeof type === 'string' ? resolveDestination(type) : type
+			return typeof resolved === 'function' && baseType(resolved as Type) === baseType(request.type)
+		})
+		if (!root) return { authorise: async () => {} }
+		const provider = createMetadataProvider(request)
+		await provider.context(root, '')
+		return { authorise: async path => { await provider.resolve(root, path) }, root }
+	} })
 	// Loaded after composition; action classes never trigger the framework bootstrap.
+	routes.add('/property-select/template', '@itrocks/framework/property-select-actions:PropertySelectTemplate')
 	routes.add('/property-select/configuration', '@itrocks/framework/property-select-actions:MetadataConfiguration')
 	routes.add('/property-select/context', '@itrocks/framework/property-select-actions:MetadataContext')
 	routes.add('/property-select/resolve', '@itrocks/framework/property-select-actions:MetadataResolve')

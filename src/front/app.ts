@@ -21,6 +21,8 @@ import { XTargetHoldOn }         from '@itrocks/xtarget/hold-on.js'
 import { XTargetMainTarget }     from '@itrocks/xtarget/main-target.js'
 import { XTargetModifier }       from '@itrocks/xtarget/modifier.js'
 
+import './property-select-list.js'
+
 let selector: string
 
 selector = 'input[data-type=object], ul[data-type=objects] > li > input:not([type=hidden])'

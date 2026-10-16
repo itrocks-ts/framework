@@ -110,3 +110,25 @@ Session restoration, rendered controls, searching and host column integration be
 META assertions. The isolated test fixture and `test/metadata-browser.mjs` exercise the public browser module and
 real request adapter, including cancellation, stale results, per-request permission changes and zero business reads.
 These test resources are outside the published runtime.
+
+## List and pane composition
+
+The browser composition listens for the configured container's `itrocks:right-pane-ready` event, whose detail exposes
+`register(owner, content, title)`. `itrocks:right-pane-request` requests replay when consumers load after the container.
+The public `bindListPane(registration)` at `@itrocks/framework/property-select-list.js` also accepts that structurally
+compatible callback directly. Framework and list import no home implementation. A container without this port mounts
+no list selector.
+
+List build activation announces `itrocks:list-ready` with its public table addition adapter and configuration saver.
+Only articles carrying an authorised `data-property-root` mount the selector. Dynamic navigation disposes detached
+views, aborts their pending requests and removes their pane registration. Metadata requests use `HttpMetadataProvider`;
+list requests keep their own scope, data source and projection/rendering responsibility.
+
+Server binding matches configured roots against the base business class, including anonymous framework wrappers.
+The same per-request metadata policy authorises projection paths and every representative dependency, before querying.
+The `/property-select/template/html` action serves only the selector's exported HTML fragment. It does not enable
+arbitrary HTML asset access. The view's optional template URL allows this transport while standalone hosts retain the
+adjacent static template. Neither the view nor list imports server framework code.
+
+Selector state remains mounted-instance state at this stage; list columns retain their existing request-session
+persistence. The selector session transaction and external pointer transport have separate contracts and deliveries.
