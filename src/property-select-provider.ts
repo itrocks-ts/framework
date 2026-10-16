@@ -92,7 +92,11 @@ export class ReflectionMetadataProvider implements MetadataProvider
 		path = normalisePath(path)
 		await this.check(root, path, signal)
 		const type = rootType(this.roots[root])
-		const target = path ? this.resolved(type, path).target : type
+		const resolved = path ? this.resolved(type, path) : undefined
+		if (resolved && !resolved.property.relation && resolved.targetMultiplicity !== 'unknown') {
+			throw new MetadataError('invalid-path')
+		}
+		const target = resolved ? resolved.target : type
 		if (!target) throw new MetadataError('unknown-target')
 		const context = new ReflectClass(target)
 		const names = this.names(context)

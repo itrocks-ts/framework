@@ -135,3 +135,22 @@ test('META-01 composition merges only an unambiguous ownership inverse', async (
 	assert.equal((await provider.resolve('direct', 'lines.invoice')).relation.inverse, undefined)
 	assert.equal((await provider.resolve('direct', 'lines.invoice')).relation.cardinality, 'unknown')
 })
+
+test('META-03 native dates stay terminal and context or method traversal rejects with a path error', async () => {
+	const provider = new ReflectionMetadataProvider(roots)
+	const context = await provider.context('invoice', '')
+	for (const name of ['date', 'dateArray', 'dateMap', 'genericDates', 'nullableDate', 'optionalDate']) {
+		const description = context.properties.find(property => property.name === name)
+		assert.equal(description.kind, 'terminal', name)
+		assert.equal(description.target, undefined)
+		assert.equal(description.relation, undefined)
+		assert.deepEqual(await provider.resolve('invoice', name), description)
+		await assert.rejects(provider.context('invoice', name), { code: 'invalid-path', name: 'MetadataError' })
+	}
+	for (const name of ['date', 'nullableDate', 'optionalDate']) {
+		await assert.rejects(provider.resolve('invoice', `${name}.getTime`),
+			{ code: 'invalid-path', name: 'MetadataError' })
+	}
+	assert.equal(require('./fixtures/metadata.js').metadataProbe.constructions, 0)
+	assert.equal(require('./fixtures/metadata.js').metadataProbe.reads, 0)
+})
