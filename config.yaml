@@ -1,6 +1,7 @@
 compose:
   '@itrocks/reflect:ReflectClass':    '@itrocks/framework:ReflectClass'
   '@itrocks/reflect:ReflectProperty': '@itrocks/framework:ReflectProperty'
+  '@itrocks/template:Template':       '@itrocks/template-insight:Template'
 
 server:
   host: 127.0.0.1

@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url'
 import test              from 'node:test'
 
 const require = createRequire(import.meta.url)
+const { compose } = require('@itrocks/compose')
+compose('', { '@itrocks/template:Template': '@itrocks/template-insight:Template' })
 const { File } = require('@itrocks/class-file')
 const { Component, Composite } = require('@itrocks/composition')
 const { Relation } = require('@itrocks/reflect')
@@ -153,7 +155,11 @@ test('selector template route serves only its published fragment', async () => {
 	const { bindPropertySelect } = require('@itrocks/framework/property-select')
 	const { PropertySelectTemplate } = require('@itrocks/framework/property-select-actions')
 	bindPropertySelect()
-	const response = await new PropertySelectTemplate().html()
+	const { trLoad, trWithLanguage } = require('@itrocks/translate')
+	await trLoad(fileURLToPath(new URL('../fr-FR.csv', import.meta.url)), 'fr-selector-template-test')
+	const response = await trWithLanguage('fr-selector-template-test', () => new PropertySelectTemplate().html())
+	assert.match(response.body, /title="Effacer la recherche"/)
+	assert.match(response.body, /aria-label="Effacer la recherche"/)
 	assert.equal(response.statusCode, 200)
 	assert.match(response.body, /class="property-select"/)
 	assert.doesNotMatch(response.body, /<html/)

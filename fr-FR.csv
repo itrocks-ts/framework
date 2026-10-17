@@ -10,6 +10,7 @@ $1 saved;$1 enregistré
 an email for password reset was sent to you;un mail de réinitialisation de mot de passe vous a été envoyé
 active;actif
 add;ajouter
+add columns;ajouter des colonnes
 add $1;ajouter $1
 age;age
 all data will be lost;toutes les données seront perdues
@@ -17,6 +18,7 @@ authenticate user;authentifier l'utilisateur
 back;retour
 birthday;date de naissance
 cancel;annuler
+clear search;effacer la recherche
 close;fermer
 confirm;confirmer
 continue;continuer

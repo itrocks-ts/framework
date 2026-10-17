@@ -12,7 +12,8 @@ import { RootId }                     from '@itrocks/property-select'
 import { StateRecord }                from '@itrocks/property-select'
 import { normalisePath }              from '@itrocks/property-select'
 import { routes }                     from '@itrocks/route'
-import { readFile }                   from 'node:fs/promises'
+import { Template }                   from '@itrocks/template'
+import { tr }                         from '@itrocks/translate'
 import { MetadataError }              from './property-select-provider'
 import { ReflectionMetadataProvider } from './property-select-provider'
 
@@ -110,7 +111,8 @@ export async function metadataBootstrap(request: Request, root: RootId, usedPath
 		return {
 			...configuration, contexts: [...contexts.values()], errors: [...errors],
 			record: { ...record, state: selector.snapshot() },
-			template: await readFile(require.resolve('@itrocks/property-select/front/property-select.html'), 'utf8')
+			template: await new Template({}).parseFile(require.resolve('@itrocks/property-select/front/property-select.html')),
+			translations: { 'Add columns': tr('Add columns') }
 		}
 	}
 	finally { selector.dispose() }

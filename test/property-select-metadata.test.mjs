@@ -7,12 +7,13 @@ import test from 'node:test'
 
 const require = createRequire(import.meta.url)
 const { compose } = require('@itrocks/compose')
-const { ReflectionMetadataProvider, MetadataError } = require('@itrocks/framework/property-select')
 assert.equal(require.cache[require.resolve('@itrocks/framework')], undefined)
 compose('', {
 	'@itrocks/reflect:ReflectClass': require.resolve('../cjs/reflect-class') + ':ReflectClass',
-	'@itrocks/reflect:ReflectProperty': require.resolve('../cjs/reflect-property') + ':ReflectProperty'
+	'@itrocks/reflect:ReflectProperty': require.resolve('../cjs/reflect-property') + ':ReflectProperty',
+	'@itrocks/template:Template': '@itrocks/template-insight:Template'
 })
+const { ReflectionMetadataProvider, MetadataError } = require('@itrocks/framework/property-select')
 const { File } = require('@itrocks/class-file')
 const { DisplayOrder, Display } = require('@itrocks/property-view')
 const { List, listOf } = require('@itrocks/list-properties')
@@ -203,10 +204,18 @@ test('list bootstrap restores suggestions and saved search without browser metad
 		scroll: { breadcrumb: { left: 25, top: 0 } }, version: 1
 	} }
 	const usedPaths = ['number', 'billing.city.name', 'delivery.city.name']
-	const initial = await metadataBootstrap({ route: root }, root, usedPaths, record)
+	const { trLoad, trWithLanguage } = require('@itrocks/translate')
+	await trLoad(new URL('../fr-FR.csv', import.meta.url).pathname, 'fr-selector-bootstrap-test')
+	const initial = await trWithLanguage('fr-selector-bootstrap-test', () =>
+		metadataBootstrap({ route: root }, root, usedPaths, record))
+	assert.deepEqual(initial.translations, {
+		'Add columns': 'Ajouter des colonnes'
+	})
 	assert.equal(initial.record.revision, 7)
 	assert.ok(initial.contexts.some(context => context.path === 'billing.city'))
 	assert.ok(initial.template.includes('ps-query'))
+	assert.match(initial.template, /title="Effacer la recherche"/)
+	assert.match(initial.template, /aria-label="Effacer la recherche"/)
 	assert.deepEqual(initial.record.state.recent, ['delivery'])
 	const metadata = new HttpMetadataProvider({ initial: { ...initial, root }, fetch: async () => {
 		assert.fail('Mount must use metadata in the HTML response')
