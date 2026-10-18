@@ -119,6 +119,7 @@ export class ReflectionMetadataProvider implements MetadataProvider
 		const property = new ReflectProperty(context, name as never)
 		const fact = property.relation
 		const description: PropertyDescription = {
+			component: !!componentOf(context.type, name as never),
 			kind: fact ? 'relation' : 'terminal', label: tr(displayOf(context.type, name as never) || name),
 			name, order: names.indexOf(name), path
 		}
