@@ -213,7 +213,8 @@ test('list bootstrap restores suggestions and saved search without browser metad
 	const initial = await trWithLanguage('fr-selector-bootstrap-test', () =>
 		metadataBootstrap({ route: root }, root, usedPaths, record))
 	assert.deepEqual(initial.translations, {
-		'Add columns': 'Ajouter des colonnes'
+		'Add columns': 'Ajouter des colonnes',
+		Others: 'Autres'
 	})
 	assert.equal(initial.record.revision, 7)
 	assert.ok(initial.contexts.some(context => context.path === 'billing.city'))

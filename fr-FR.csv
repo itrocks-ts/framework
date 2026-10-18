@@ -49,6 +49,7 @@ name;nom
 new;nouveau
 new $1;nouveau $1
 no;non
+others;autres
 password;mot de passe
 password reset request;demande de réinitialisation de mot de passe
 please confirm;veuillez confirmer

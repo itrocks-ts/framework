@@ -112,7 +112,7 @@ export async function metadataBootstrap(request: Request, root: RootId, usedPath
 			...configuration, contexts: [...contexts.values()], errors: [...errors],
 			record: { ...record, state: selector.snapshot() },
 			template: await new Template({}).parseFile(require.resolve('@itrocks/property-select/front/property-select.html')),
-			translations: { 'Add columns': tr('Add columns') }
+			translations: { 'Add columns': tr('Add columns'), Others: tr('Others') }
 		}
 	}
 	finally { selector.dispose() }
