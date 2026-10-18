@@ -3,6 +3,7 @@ import { inherits }                      from '@itrocks/class-type'
 import { Type }                          from '@itrocks/class-type'
 import { componentOf }                   from '@itrocks/composition'
 import { compositeOf }                   from '@itrocks/composition'
+import { expandOf }                      from '@itrocks/property-expand'
 import { groupOf }                       from '@itrocks/property-group'
 import { MetadataProvider }              from '@itrocks/property-select'
 import { normalisePath }                 from '@itrocks/property-select'
@@ -124,7 +125,7 @@ export class ReflectionMetadataProvider implements MetadataProvider
 		const property = new ReflectProperty(context, name as never)
 		const fact = property.relation
 		const description: PropertyDescription = {
-			component: !!componentOf(context.type, name as never),
+			component: !!componentOf(context.type, name as never) || expandOf(context.type, name as never),
 			kind: fact ? 'relation' : 'terminal', label: tr(displayOf(context.type, name as never) || name),
 			name, order: names.indexOf(name), path
 		}

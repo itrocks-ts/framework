@@ -53,6 +53,47 @@ test('functional groups inherit class and property declarations and expose only 
 	assert.equal(require('./fixtures/metadata.js').metadataProbe.reads, 0)
 })
 
+test('expanded relations share component groups without changing ownership facts', async () => {
+	const { Component } = require('@itrocks/composition')
+	const { Expand } = require('@itrocks/property-expand')
+	const { PropertySelect } = require('@itrocks/property-select')
+	class ExpandedInvoice extends Invoice {}
+	File(require.resolve('./fixtures/invoice.js'))(ExpandedInvoice)
+	Component()(ExpandedInvoice.prototype, 'billing')
+	Expand(false)(ExpandedInvoice.prototype, 'billing')
+	const rootMap = { expanded: { type: ExpandedInvoice } }
+	const provider = new ReflectionMetadataProvider(rootMap)
+	const plain = await provider.resolve('expanded', 'delivery')
+	Expand()(ExpandedInvoice.prototype, 'delivery')
+	const expanded = await provider.resolve('expanded', 'delivery')
+	assert.deepEqual(expanded, { ...plain, component: true })
+	assert.equal((await provider.resolve('expanded', 'billing')).component, true)
+	assert.equal((await provider.resolve('expanded', 'tags')).component, false)
+	assert.equal((await provider.context('expanded', '')).properties
+		.find(property => property.name === 'delivery').component, true)
+	const selector = new PropertySelect({ metadata: provider, root: 'expanded' })
+	try {
+		assert.equal(await selector.mount(), true)
+		assert.deepEqual(selector.componentGroups.map(group => group.property.path), ['billing', 'delivery'])
+		const group = selector.componentGroups.find(group => group.property.path === 'delivery')
+		assert.ok(group.properties.length > 0)
+		assert.ok(group.properties.every(property => property.path.startsWith('delivery.')))
+		assert.equal(group.properties.some(property => property.path === 'delivery.city'), true)
+	}
+	finally { selector.dispose() }
+	const filtered = new PropertySelect({
+		metadata: new ReflectionMetadataProvider(rootMap, (_root, path) => path !== 'delivery.city'),
+		root: 'expanded'
+	})
+	try {
+		assert.equal(await filtered.mount(), true)
+		assert.deepEqual(filtered.componentGroups.find(group => group.property.path === 'delivery').properties, [])
+	}
+	finally { filtered.dispose() }
+	Expand(false)(ExpandedInvoice.prototype, 'delivery')
+	assert.equal((await provider.resolve('expanded', 'delivery')).component, false)
+})
+
 test('selector metadata translates dynamic class and property labels', async () => {
 	const directory = await mkdtemp(join(tmpdir(), 'property-select-labels-'))
 	try {

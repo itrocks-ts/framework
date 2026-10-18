@@ -51,6 +51,9 @@ constructing domain records. Metadata uses declared property types, never getter
 Functional groups come from `groupOf(target)` in `@itrocks/property-group`. Each group contains its stable name,
 translated label and authorised full property paths; empty groups are omitted. Inherited and property-level
 `@Group` declarations use the same accessor.
+Relations marked `@Component` or [`@Expand`](https://github.com/itrocks-ts/property-expand) receive `component: true`.
+The selector presents both as identical groups of authorised child properties. `@Expand` only requests expansion;
+it does not declare composition, change cardinality or infer an ownership inverse.
 Labels and order reuse `class-view` and `property-view`, with technical-name fallbacks. Order gaps after permission
 filtering retain the original business order. Host translation remains separate.
 
