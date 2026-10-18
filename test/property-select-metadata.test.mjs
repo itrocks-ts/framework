@@ -38,16 +38,32 @@ List('number')(MetadataInvoice)
 const roots = { configured: { type: '/node_modules/@itrocks/framework/test/fixtures/invoice:Invoice' },
 	direct: { type: Invoice }, invoice: { type: MetadataInvoice } }
 
+test('functional groups inherit class and property declarations and expose only authorised members', async () => {
+	const provider = new ReflectionMetadataProvider(roots, (_root, path) => !['billing', 'secret'].includes(path))
+	const context = await provider.context('invoice', '')
+	assert.deepEqual(context.groups, [
+		{ label: 'summary', name: 'summary', properties: ['number', 'hidden'] },
+		{ label: 'references', name: 'references', properties: ['inherited'] }
+	])
+	const nested = await provider.context('invoice', 'lines.invoice')
+	assert.deepEqual(nested.groups, [{
+		label: 'summary', name: 'summary', properties: ['lines.invoice.billing', 'lines.invoice.number']
+	}])
+	assert.equal(require('./fixtures/metadata.js').metadataProbe.constructions, 0)
+	assert.equal(require('./fixtures/metadata.js').metadataProbe.reads, 0)
+})
+
 test('selector metadata translates dynamic class and property labels', async () => {
 	const directory = await mkdtemp(join(tmpdir(), 'property-select-labels-'))
 	try {
 		const file = join(directory, 'labels.csv')
-		await writeFile(file, 'metadata invoice;facture de métadonnées\nreference;référence\n')
+		await writeFile(file, 'metadata invoice;facture de métadonnées\nreference;référence\nsummary;synthèse\n')
 		const { trLoad, trWithLanguage } = require('@itrocks/translate')
 		await trLoad(file, 'fr-property-select-test')
 		const context = await trWithLanguage('fr-property-select-test', () =>
 			new ReflectionMetadataProvider(roots).context('invoice', ''))
 		assert.equal(context.label, 'facture de métadonnées')
+		assert.equal(context.groups.find(group => group.name === 'summary').label, 'synthèse')
 		assert.equal(context.properties.find(property => property.name === 'number').label, 'Référence')
 	}
 	finally { await rm(directory, { recursive: true, force: true }) }

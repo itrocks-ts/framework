@@ -1,3 +1,4 @@
+import { Group } from '@itrocks/property-group'
 import { Address } from './address'
 import { City } from './city'
 import { Line } from './line'
@@ -22,3 +23,5 @@ export class Invoice
 	}
 
 }
+
+Group<Invoice>('summary', 'number', 'billing')(Invoice)

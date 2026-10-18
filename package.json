@@ -36,6 +36,7 @@
 		"@itrocks/mysql": "latest",
 		"@itrocks/notifications": "latest",
 		"@itrocks/password": "latest",
+		"@itrocks/property-group": "latest",
 		"@itrocks/property-select": "latest",
 		"@itrocks/property-translate": "latest",
 		"@itrocks/property-type": "latest",
@@ -121,5 +122,5 @@
 		"build:test": "tsc -p test/tsconfig.json",
 		"test": "npm run build && npm run build:test && node --test test/*.test.js test/*.test.mjs"
 	},
-	"version": "1.1.1"
+	"version": "1.2.0"
 }

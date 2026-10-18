@@ -3,6 +3,7 @@ import { inherits }                      from '@itrocks/class-type'
 import { Type }                          from '@itrocks/class-type'
 import { componentOf }                   from '@itrocks/composition'
 import { compositeOf }                   from '@itrocks/composition'
+import { groupOf }                       from '@itrocks/property-group'
 import { MetadataProvider }              from '@itrocks/property-select'
 import { normalisePath }                 from '@itrocks/property-select'
 import { ObjectContext }                 from '@itrocks/property-select'
@@ -108,7 +109,11 @@ export class ReflectionMetadataProvider implements MetadataProvider
 		}
 		aborted(signal)
 		const { displayOf: classDisplay } = require('@itrocks/class-view') as typeof import('@itrocks/class-view')
-		return { label: tr(classDisplay(target) || target.name), path, properties, type: typeId(target) }
+		const groups = Object.entries(groupOf(target)).map(([name, members]) => ({
+			label: tr(name), name,
+			properties: properties.filter(property => members.includes(property.name as never)).map(property => property.path)
+		})).filter(group => group.properties.length)
+		return { groups, label: tr(classDisplay(target) || target.name), path, properties, type: typeId(target) }
 	}
 
 	private description(

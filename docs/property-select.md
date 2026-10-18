@@ -48,6 +48,9 @@ constructing domain records. Metadata uses declared property types, never getter
 
 `context(root, path, signal?)` returns one object's authorised properties, with full root-relative paths.
 `resolve(root, '', signal?)` returns that root context; another path returns one property description.
+Functional groups come from `groupOf(target)` in `@itrocks/property-group`. Each group contains its stable name,
+translated label and authorised full property paths; empty groups are omitted. Inherited and property-level
+`@Group` declarations use the same accessor.
 Labels and order reuse `class-view` and `property-view`, with technical-name fallbacks. Order gaps after permission
 filtering retain the original business order. Host translation remains separate.
 

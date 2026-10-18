@@ -1,3 +1,4 @@
+import { Group } from '@itrocks/property-group'
 import { Invoice } from './invoice'
 
 export const metadataProbe = { constructions: 0, reads: 0 }
@@ -27,3 +28,7 @@ export class MetadataInvoice extends Invoice
 	}
 
 }
+
+Group<MetadataInvoice>('summary', 'hidden')(MetadataInvoice)
+Group<MetadataInvoice>('private', 'secret')(MetadataInvoice)
+Group<MetadataInvoice>('references')(MetadataInvoice.prototype, 'inherited')
