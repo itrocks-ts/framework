@@ -176,6 +176,13 @@ try {
 			assert.deepEqual(await dialog.boundingBox(), initial, 'Visibility changes keep the same modal bounds')
 		}
 	}
+	const waitModified = async (link, label) => {
+		await page.waitForFunction(() =>
+			document.querySelector('ol.breadcrumb a[data-active=true]')?.dataset.modified === 'true'
+		)
+		assert.equal(await link.textContent(), label, 'The modification marker leaves the DOM label unchanged')
+		assert.equal(await link.evaluate(element => getComputedStyle(element, '::after').content), '"*"')
+	}
 	const waitValid = async () => {
 		await page.waitForFunction(() => !document.querySelector('.save-list input[name=save]').disabled)
 	}
@@ -215,6 +222,7 @@ try {
 	assert.equal(await base.getAttribute('target'), '#modal')
 	assert.match(await base.getAttribute('href'), /custom-list\?mode=choose/)
 	assert.equal(await base.evaluate(element => getComputedStyle(element).fontWeight), '700')
+	assert.notEqual(await base.evaluate(element => getComputedStyle(element, '::after').content), '"*"')
 	assert.equal(await page.locator('li[data-action=custom-list]').isVisible(), false)
 	assert.equal(calls.some(call => call.query.includes('mode=breadcrumb')), false,
 		'The list response supplies its breadcrumb without a second request')
@@ -352,6 +360,7 @@ try {
 	columnDelay = 0
 	await base.click()
 	await choose.locator('a[data-key=protegee]').click()
+	await choose.waitFor({ state: 'detached' })
 	await page.waitForFunction(() => document.querySelector('li[data-action=custom-list] a')?.textContent === 'Protégée')
 	const beforeColumns = calls.length
 	const columnsArticle = await page.locator('main > article').elementHandle()
@@ -361,18 +370,18 @@ try {
 	})))
 	assert.equal(await active.textContent(), 'Protégée', 'Persisting unchanged columns does not mark the save modified')
 	await page.evaluate(() => window.listReady.request(new URLSearchParams({ columns: 'year,title' })))
-	await page.waitForFunction(() => document.querySelector('li[data-action=custom-list] a')?.textContent === 'Protégée*')
+	await waitModified(active, 'Protégée')
 	assert.equal(await columnsArticle.evaluate(article => article.isConnected), true)
 	assert.equal(calls.slice(beforeColumns).some(call => call.query.includes('mode=breadcrumb')), false,
 		'Changing columns updates the marker locally, without another request')
 	await snapshot('changed-columns')
 	// A real filter submission marks the active save dirty and remains dirty when the filter is restored.
 	await filter('Alien')
-	await page.waitForFunction(() => document.querySelector('li[data-action=custom-list] a')?.textContent === 'Protégée*')
+	await waitModified(active, 'Protégée')
 	assert.equal(await active.evaluate(element => getComputedStyle(element).fontWeight), '400')
 	assert.equal(await base.evaluate(element => getComputedStyle(element).fontWeight), '400')
 	await filter('')
-	await page.waitForFunction(() => document.querySelector('li[data-action=custom-list] a')?.textContent === 'Protégée*')
+	await waitModified(active, 'Protégée')
 	await page.locator('#view').click()
 	await page.locator('article[data-action=output]').waitFor()
 	await active.waitFor()
@@ -386,6 +395,7 @@ try {
 	await base.click()
 	await choose.locator('a[data-key=protegee]').waitFor()
 	await choose.locator('a[data-key=protegee]').click()
+	await choose.waitFor({ state: 'detached' })
 	await active.waitFor()
 	// The persistent fixture link uses the framework's one-second secure-click interval.
 	await page.waitForTimeout(1100)
@@ -421,12 +431,13 @@ try {
 	assert.equal(calls.slice(deleteRequests).some(call => call.path === '/saved-movie/list'), false)
 	assert.match(await page.locator('#notifications > li').first().textContent(), /Protégée.*supprimé/)
 	await active.waitFor({ state: 'detached' })
-	assert.equal(await base.textContent(), 'Films*')
+	await waitModified(base, 'Films')
 	assert.equal(await page.locator('li[data-action=custom-list]').isVisible(), false)
 	await saveAs('Protégée', 'protected')
 	await reload('bob')
 	await base.click()
 	await choose.locator('a[data-key=protegee]').click()
+	await choose.waitFor({ state: 'detached' })
 	await active.waitFor()
 	await active.dblclick()
 	await save.locator('.error').waitFor({ state: 'visible' })
