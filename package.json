@@ -125,5 +125,5 @@
 		"build:test": "tsc -p test/tsconfig.json",
 		"test": "npm run build && npm run build:test && node --test test/*.test.js test/*.test.mjs"
 	},
-	"version": "1.5.1"
+	"version": "1.5.2"
 }
