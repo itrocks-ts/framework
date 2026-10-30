@@ -1,12 +1,12 @@
-import { actionRequestDependsOn } from '@itrocks/action-request'
-import { Request }                from '@itrocks/action-request'
 import { Action }                 from '@itrocks/action'
 import { needOf }                 from '@itrocks/action'
+import { actionRequestDependsOn } from '@itrocks/action-request'
+import { Request }                from '@itrocks/action-request'
 import { appDir }                 from '@itrocks/app-dir'
 import { isAnyType }              from '@itrocks/class-type'
 import { config }                 from '@itrocks/config'
-import { FileStore }              from '@itrocks/fastify-file-session-store'
 import { FastifyServer }          from '@itrocks/fastify'
+import { FileStore }              from '@itrocks/fastify-file-session-store'
 import { Headers }                from '@itrocks/request-response'
 import { Response }               from '@itrocks/request-response'
 import { loadRoutes, routes }     from '@itrocks/route'
@@ -49,11 +49,14 @@ function defaultHeader(headers: Headers, name: string, value: string): void
 
 async function execute(request: Request): Promise<Response>
 {
+	// Saved-list reads share the business list's access policy; writes enforce authentication and ownership.
+	const accessAction = (request.action === 'custom-list') ? 'list' : request.action
 	// Access control
 	if (
 		(config.access?.free !== '*')
 		&& !request.request.session.user
 		&& !config.access?.free?.includes(request.route + '/' + request.action)
+		&& !config.access?.free?.includes(request.route + '/' + accessAction)
 	) {
 		request.action = 'login'
 		request.route  = '/user'

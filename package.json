@@ -24,6 +24,8 @@
 		"@itrocks/config": "latest",
 		"@itrocks/contained-auto-width": "latest",
 		"@itrocks/core-transformers": "latest",
+		"@itrocks/custom-list": "latest",
+		"@itrocks/data-path": "latest",
 		"@itrocks/decorator": "latest",
 		"@itrocks/default-action-workflow": "latest",
 		"@itrocks/fastify": "latest",
@@ -123,5 +125,5 @@
 		"build:test": "tsc -p test/tsconfig.json",
 		"test": "npm run build && npm run build:test && node --test test/*.test.js test/*.test.mjs"
 	},
-	"version": "1.4.1"
+	"version": "1.5.0"
 }

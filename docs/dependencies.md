@@ -44,3 +44,33 @@ and browser use.
 [Relationship bindings](sql-relationships.md) map schema/reflection facts to `sql-join`.
 [Projection bindings](sql-projection.md) supply final-owner SQL conversions to MySQL and SQL builders.
 These bindings own persistence metadata; the property metadata provider does not query these adapters.
+
+## Saved lists and application data
+
+`bindCustomList()` in `src/custom-list.ts` connects [`custom-list`](../../custom-list/README.md) to the
+[`list session port`](../../list/README.md#session-state-integration).
+`context` resolves the translated default label, route key, business module file path and current session user.
+`state.read` and `state.replace` delegate to `listState` and `replaceListState`.
+The list's preparation callback loads explicit `custom` query values before rendering;
+an empty value restores the default. Settings changes mark the active name modified.
+
+The browser shell keeps a small context adapter. It imports `@itrocks/custom-list/custom-list.js` on the first list or
+record heading and binds the pending-write dependency. The server includes `CustomList.breadcrumbView(request)`
+through `listDependsOn({ view })`. On list pages the shell applies that template directly, skipping the ordinary
+breadcrumb updater and any follow-up request. Column-only changes update the modified marker locally.
+Record headings use the ordinary breadcrumb updater and its saved-list enrichment.
+Modal behaviour stays in the modal templates' `build.js` dependency; it is not imported by the shell.
+The package itself never imports the framework or binds host dependencies on its own.
+The table's `settled` callback waits for pending column writes before loading or saving settings.
+`itrocks:list-change` refreshes the modification marker after column persistence.
+Anonymous saved-list actions share the business list's configured access policy; file writes additionally enforce
+signed-in user and ownership rules in `custom-list`.
+
+[`data-path`](../../data-path/README.md) receives `configPath('dataPath', '../data')` from
+[`config`](../../config/README.md). Relative paths resolve against the declaring YAML file:
+
+```yaml
+dataPath: ../data/
+```
+
+The framework loads `custom-list` translations before its own and application catalogues.

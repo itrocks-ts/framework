@@ -4,6 +4,7 @@ import { Request }        from '@itrocks/request-response'
 import { trInit }         from '@itrocks/translate'
 import { trLoad }         from '@itrocks/translate'
 import { trWithLanguage } from '@itrocks/translate'
+import { dirname }        from 'node:path'
 import { join }           from 'node:path'
 
 type LanguageConfiguration = {
@@ -40,7 +41,10 @@ export function configureLanguages()
 
 	loading = (async () => {
 		// TODO search language files everywhere in application modules, not only into app
-		const directories = [join(__dirname, '..'), join(appDir, 'app'), appDir]
+		const directories = [
+			join(dirname(require.resolve('@itrocks/custom-list')), '..'),
+			join(__dirname, '..'), join(appDir, 'app'), appDir
+		]
 		for (const language of configuration.supportedLanguages) {
 			for (const directory of directories) {
 				const file = join(directory, language + '.csv')

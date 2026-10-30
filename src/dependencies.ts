@@ -36,15 +36,16 @@ import { Template }                         from '@itrocks/template'
 import { templateDependsOn }                from '@itrocks/template'
 import { applyTransformer }                 from '@itrocks/transformer'
 import { HTML, IGNORE }                     from '@itrocks/transformer'
-import { OUTPUT }                          from '@itrocks/transformer'
+import { OUTPUT }                           from '@itrocks/transformer'
 import { lang }                             from '@itrocks/translate'
 import { tr }                               from '@itrocks/translate'
 import { format, parse }                    from 'date-fns'
 import { join }                             from 'node:path'
 import { normalize }                        from 'node:path'
+import { bindCustomList }                   from './custom-list'
 import { configureLanguages }               from './language'
-import { bindPropertySelect }                from './property-select'
-import { bindSqlProjection }                 from './sql-projection'
+import { bindPropertySelect }               from './property-select'
+import { bindSqlProjection }                from './sql-projection'
 
 async function propertyOutput<T extends object>(object: T, property: keyof T): Promise<string>
 {
@@ -113,6 +114,8 @@ export function bind()
 	})
 
 	configureLanguages()
+
+	bindCustomList()
 
 	Action.prototype.htmlTemplateResponse = async function(
 		data: any, request: Request, templateFile: string, statusCode = 200, headers: Headers = {}
