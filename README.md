@@ -323,3 +323,8 @@ The list HTML includes authorised selector metadata, advice, template and sessio
 additional application requests.
 A stable configured `session.secret` is needed to recognise existing cookies after a server restart.
 See [property selector integration](docs/property-select.md) for route-backed metadata and access.
+
+
+Ordinary object collections without an explicit relation cardinality use the storage link-table convention in SQL
+criteria, including filters through a collection's representative properties. Component collections retain their
+inverse foreign-key mapping. Explicit relation metadata and schema mappings take precedence.

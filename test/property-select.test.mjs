@@ -38,7 +38,7 @@ test('public binding uses metadata without constructors and propagates optional 
 	const graph = new RelationshipGraph(Invoice, ['billing.city.name', 'delivery.city.name', 'number'])
 	assert.deepEqual(graph.getOrderedJoins().map(join => join.mode), ['LEFT', 'LEFT', 'INNER', 'INNER'])
 	assert.equal(graph.getPath('billing.city.name').definition.class.type, City)
-	assert.equal(graph.getPath('billing').relationship.cardinality, 'unknown')
+	assert.equal(graph.getPath('billing').relationship.cardinality, 'many-to-one')
 	assert.equal(graph.getPath('billing').multiplicity, 'one')
 	assert.equal(graph.getPath('delivery').tableDefinition, Address)
 })
@@ -166,4 +166,20 @@ test('selector template route serves only its published fragment', async () => {
 	const { routes } = require('@itrocks/route')
 	assert.equal(routes.destination('/property-select/template'),
 		'@itrocks/framework/property-select-actions:PropertySelectTemplate')
+})
+
+
+test('ordinary collections without explicit cardinality use the storage link-table convention', () => {
+	Relation({ cardinality: 'unknown' })(Invoice.prototype, 'tags')
+	try {
+		const graph = new RelationshipGraph(Invoice, ['tags.label'])
+		assert.equal(graph.getPath('tags').relationship.cardinality, 'many-to-many')
+		assert.match(graph.toSql(), /LEFT JOIN `invoice_tag`/)
+		assert.match(graph.toSql(), /`tag_id` = `t2`\.`id`/)
+		Relation({ cardinality: 'unknown', inverse: 'invoices' })(Invoice.prototype, 'tags')
+		const withInverse = new RelationshipGraph(Invoice, ['tags.label'])
+		assert.equal(withInverse.getPath('tags').relationship.cardinality, 'many-to-many')
+		assert.equal(withInverse.toSql(), graph.toSql())
+	}
+	finally { Relation({ cardinality: 'many-to-many', inverse: 'invoices' })(Invoice.prototype, 'tags') }
 })

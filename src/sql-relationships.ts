@@ -82,7 +82,10 @@ export function relationshipOf(table: TableDefinition, column: string, property:
 		if (candidates.length > 1) throw new RelationshipError('unsupported-relationship', column)
 		inverse = candidates[0]
 	}
-	if (!mapping && (fact.cardinality === 'many-to-many')) {
+	const conventionalCollection = (fact.cardinality === 'unknown')
+		&& (multiplicity === 'many')
+		&& !componentOf(table, column)
+	if (!mapping && ((fact.cardinality === 'many-to-many') || conventionalCollection)) {
 		const left  = tableOf(table)
 		const right = tableOf(target)
 		if ((left === right) || (toColumn(left) === toColumn(right))) {
@@ -111,10 +114,14 @@ export function relationshipOf(table: TableDefinition, column: string, property:
 		}
 	}
 	let cardinality = fact.cardinality
-	if ((cardinality === 'unknown') && inverse) {
-		if (componentOf(table, column)) cardinality = (multiplicity === 'many') ? 'one-to-many' : 'one-to-one'
-		else if (compositeOf(table, column)) {
-			cardinality = (inverse.relation?.targetMultiplicity === 'many') ? 'many-to-one' : 'one-to-one'
+	if (cardinality === 'unknown') {
+		if (multiplicity === 'many') {
+			cardinality = componentOf(table, column) ? 'one-to-many' : 'many-to-many'
+		}
+		else if (multiplicity === 'one') {
+			const owned = componentOf(table, column)
+				|| (compositeOf(table, column) && (inverse?.relation?.targetMultiplicity === 'one'))
+			cardinality = owned ? 'one-to-one' : 'many-to-one'
 		}
 	}
 	return {
