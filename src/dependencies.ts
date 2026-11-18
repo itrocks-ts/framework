@@ -126,7 +126,9 @@ export function bind()
 
 		template.applicationPath = request.request.applicationPath.bind(request.request)
 		template.publicUrl       = request.request.publicUrl.bind(request.request)
-		template.urlAttributes.push('data-custom-list-route', 'data-fetch', 'data-feed', 'data-route')
+		template.urlAttributes.push(
+			'data-custom-list-route', 'data-fetch', 'data-feed', 'data-href', 'data-link', 'data-route'
+		)
 
 		return this.htmlResponse(
 			await template.parseFile(templateFile, contained && join(appDir, config.container.file)),
