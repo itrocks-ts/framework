@@ -32,7 +32,7 @@ async function activate(entry: Entry): Promise<void>
 		const configuration = initial ?? await metadata.configuration(entry.article.dataset.propertyRoot!)
 		if (!entry.article.isConnected || mounted.has(entry.article)) return
 		integration = new ListPropertySelect(entry.article, {
-			...entry.options, advice: configuration.advice, metadata, templateUrl: '/property-select/template/html',
+			...entry.options, advice: configuration.advice, metadata, templateUrl: 'property-select/template/html',
 			mountSelector: (content, title) => register!(entry.article, content, title)
 		})
 		mounted.set(entry.article, integration)

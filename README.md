@@ -74,6 +74,16 @@ import { beforeFrameworkRun } from '@itrocks/framework'
 beforeFrameworkRun(() => import('./src/dependencies'))
 ```
 
+### Applications in subdirectories
+
+The framework supports public mount paths such as `/showtime/`. The reverse proxy sets `X-Forwarded-Prefix: /showtime`;
+no business routes or filesystem paths need that prefix. Rendering uses the current request's public URL callback,
+including framework URL-valued data attributes. The home container supplies a `<base>` for browser-relative endpoints
+and the import map. Application containers must provide the same base element before their scripts and links.
+Application browser code should use base-relative endpoints or resolve them against `document.baseURI`.
+
+For an Apache proxy, use `ProxyPass "/showtime/" "http://127.0.0.1:3456/"` and set the prefix header within that location.
+
 ### Request languages
 
 The framework can select one translation catalog for each request without sharing language state between concurrent

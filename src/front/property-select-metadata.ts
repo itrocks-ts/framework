@@ -18,7 +18,7 @@ export class HttpMetadataProvider implements MetadataProvider
 	constructor(options: MetadataTransportOptions = {})
 	{
 		this.initial = options.initial
-		this.endpoint = options.endpoint ?? '/property-select'
+		this.endpoint = options.endpoint ?? 'property-select'
 		this.fetcher = options.fetch ?? globalThis.fetch.bind(globalThis)
 	}
 
