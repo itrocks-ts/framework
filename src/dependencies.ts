@@ -123,9 +123,11 @@ export function bind()
 		const containerData = Object.assign(defaultContainerData(request), this)
 		const contained     = !request.request.headers['xhr-info'] && config.container?.file
 		const template      = new Template(data, containerData)
+
 		template.applicationPath = request.request.applicationPath.bind(request.request)
 		template.publicUrl       = request.request.publicUrl.bind(request.request)
 		template.urlAttributes.push('data-custom-list-route', 'data-fetch', 'data-feed', 'data-route')
+
 		return this.htmlResponse(
 			await template.parseFile(templateFile, contained && join(appDir, config.container.file)),
 			statusCode,
@@ -139,15 +141,14 @@ function configContainerData()
 {
 	const configContainerData = config.container?.data ?? {}
 	for (const [name, value] of Object.entries(configContainerData)) {
-		if ((typeof value === 'string') && '@.'.includes(value[0])) {
-			const exported = value.includes(':')
-				? require(value.split(':')[0])[value.split(':')[1]]
-				: (require(value).default ?? Object.values(require(value))[0])
-			configContainerData[name] =
-				isAnyFunction(exported) ? exported(config[name]) :
-					isAnyType(exported)     ? new exported(config[name]) :
-						exported
-		}
+		if (!(typeof value === 'string') || !'@.'.includes(value[0])) continue
+		const exported = value.includes(':')
+			? require(value.split(':')[0])[value.split(':')[1]]
+			: (require(value).default ?? Object.values(require(value))[0])
+		configContainerData[name] =
+			isAnyFunction(exported) ? exported(config[name])     :
+			isAnyType(exported)     ? new exported(config[name]) :
+			exported
 	}
 	return configContainerData
 }

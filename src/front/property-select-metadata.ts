@@ -17,9 +17,9 @@ export class HttpMetadataProvider implements MetadataProvider
 
 	constructor(options: MetadataTransportOptions = {})
 	{
-		this.initial = options.initial
 		this.endpoint = options.endpoint ?? 'property-select'
-		this.fetcher = options.fetch ?? globalThis.fetch.bind(globalThis)
+		this.fetcher  = options.fetch    ?? globalThis.fetch.bind(globalThis)
+		this.initial  = options.initial
 	}
 
 	configuration(root: string, signal?: AbortSignal): Promise<{ advice: readonly string[]; version: string }>
