@@ -70,6 +70,14 @@ test('composes Template before its first import during framework startup', () =>
 			if (filename === mainFile) return { run: async () => {
 				assert.ok(firstImporter, 'Framework did not import Template')
 				assert.equal(new (require('@itrocks/template').Template)({}).doLiteral, true)
+				const { ReflectClass, ReflectProperty } = require('@itrocks/reflect')
+				const { City } = require(require('node:path').resolve('test/fixtures/city.js'))
+				const city = new City()
+				city.name = 'Sample city'
+				const [property] = new ReflectClass(city).orderedProperties()
+				assert.ok(property instanceof ReflectProperty)
+				assert.match(await property.edit(), /name="name"/)
+				assert.match(await property.outputMandatoryContainer(), /Sample city/)
 				require('node:fs').writeSync(1, JSON.stringify({ firstImporter }))
 				process.exit(0)
 			} }
