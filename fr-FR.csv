@@ -11,6 +11,7 @@ an email for password reset was sent to you;un mail de réinitialisation de mot 
 active;actif
 add;ajouter
 add columns;ajouter des colonnes
+add row;ajouter une ligne
 add $1;ajouter $1
 age;age
 all data will be lost;toutes les données seront perdues
@@ -58,7 +59,9 @@ please enter your new password;veuillez entrer votre nouveau mot de passe
 please try again later or contact our support team if the issue persists;veuillez réessayer ultérieurement ou contacter notre équipe de support si le problème persiste
 please wait for an administrator to activate it;veuillez attendre qu'un administrateur l'active
 print;imprimer
+remove row;supprimer la ligne
 reset search filters;réinitialiser les filtres de recherche
+row actions;actions de la ligne
 sign up;s'inscrire
 sign-up error;erreur pendant l'inscription
 reset;réinitialiser

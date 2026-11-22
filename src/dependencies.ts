@@ -15,6 +15,7 @@ import { config }                           from '@itrocks/config'
 import { initCoreTransformers }             from '@itrocks/core-transformers'
 import { initStoreTransformers }            from '@itrocks/core-transformers'
 import { initFileTransformers }             from '@itrocks/file'
+import { formControl }                      from '@itrocks/form-controls'
 import { initListProperties }               from '@itrocks/list-properties'
 import { passwordDependsOn }                from '@itrocks/password'
 import { setPasswordTransformers }          from '@itrocks/password/transformers'
@@ -42,9 +43,13 @@ import { tr }                               from '@itrocks/translate'
 import { format, parse }                    from 'date-fns'
 import { join }                             from 'node:path'
 import { normalize }                        from 'node:path'
+
+// Load the composed Template before adapters that also import it.
+import { editComponents }                   from '@itrocks/edit-components'
 import { bindCustomList }                   from './custom-list'
 import { configureLanguages }               from './language'
 import { bindPropertySelect }               from './property-select'
+import { formControlDependsOn }             from './reflect-property'
 import { bindSqlProjection }                from './sql-projection'
 
 async function propertyOutput<T extends object>(object: T, property: keyof T): Promise<string>
@@ -56,6 +61,7 @@ export function bind()
 {
 
 	classViewDependsOn({ propertyOutput, requiredOf, tr })
+	formControlDependsOn(formControl)
 
 	if (config.dataSource) {
 		createDataSource(config.dataSource)
@@ -65,6 +71,7 @@ export function bind()
 
 	initCoreTransformers({
 		displayOf,
+		editComponents,
 		fieldIdOf:              toCssId,
 		fieldNameOf:            toField,
 		formatDate:             date => format(date, tr('dd/MM/yyyy', { ucFirst: false })),

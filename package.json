@@ -6,12 +6,10 @@
 	"dependencies": {
 		"@itrocks/action": "latest",
 		"@itrocks/action-request": "latest",
-		"@itrocks/air-datepicker": "latest",
 		"@itrocks/app-dir": "latest",
 		"@itrocks/asset-loader": "latest",
 		"@itrocks/auto-focus": "latest",
 		"@itrocks/auto-redirect": "latest",
-		"@itrocks/autocomplete": "latest",
 		"@itrocks/breadcrumb": "latest",
 		"@itrocks/build": "latest",
 		"@itrocks/class-file": "latest",
@@ -22,17 +20,17 @@
 		"@itrocks/compose": "latest",
 		"@itrocks/composition": "latest",
 		"@itrocks/config": "latest",
-		"@itrocks/contained-auto-width": "latest",
 		"@itrocks/core-transformers": "latest",
 		"@itrocks/custom-list": "latest",
 		"@itrocks/data-path": "latest",
 		"@itrocks/decorator": "latest",
 		"@itrocks/default-action-workflow": "latest",
+		"@itrocks/edit-components": "latest",
 		"@itrocks/fastify": "latest",
 		"@itrocks/fastify-file-session-store": "latest",
 		"@itrocks/file": "latest",
+		"@itrocks/form-controls": "latest",
 		"@itrocks/lazy-loading": "latest",
-		"@itrocks/links": "latest",
 		"@itrocks/list": "latest",
 		"@itrocks/list-properties": "latest",
 		"@itrocks/mysql": "latest",
@@ -125,5 +123,5 @@
 		"build:test": "tsc -p test/tsconfig.json",
 		"test": "npm run build && npm run build:test && node --test test/*.test.js test/*.test.mjs"
 	},
-	"version": "1.6.1"
+	"version": "1.7.0"
 }
