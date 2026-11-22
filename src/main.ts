@@ -1,12 +1,15 @@
 import { Action }                 from '@itrocks/action'
 import { needOf }                 from '@itrocks/action'
 import { actionRequestDependsOn } from '@itrocks/action-request'
+import { InvalidSelectionError }  from '@itrocks/action-request'
 import { Request }                from '@itrocks/action-request'
 import { appDir }                 from '@itrocks/app-dir'
 import { isAnyType }              from '@itrocks/class-type'
 import { config }                 from '@itrocks/config'
 import { FastifyServer }          from '@itrocks/fastify'
+import { sessionTransaction }     from '@itrocks/fastify'
 import { FileStore }              from '@itrocks/fastify-file-session-store'
+import { bindListSelection }      from '@itrocks/list-selection'
 import { Headers }                from '@itrocks/request-response'
 import { Response }               from '@itrocks/request-response'
 import { loadRoutes, routes }     from '@itrocks/route'
@@ -76,6 +79,16 @@ async function execute(request: Request): Promise<Response>
 		const action = (new module) as ActionObject
 		if (request.format in action) {
 			const need = needOf(action)
+			if ((need.need === 'object') && (request.data.selectionMode !== undefined)) {
+				try {
+					if (!(await request.resolveSelection()).length)
+						return new Response('The selection is empty.', 409)
+				}
+				catch (error) {
+					if (error instanceof InvalidSelectionError) return new Response(error.message, 409)
+					throw error
+				}
+			}
 			if (
 				need.alternative
 				&& (need.alternative !== request.action)
@@ -106,6 +119,7 @@ export async function run()
 		getModule:      routes.resolve.bind(routes),
 		isDomainObject: object => isAnyType(object) && !(object.prototype instanceof Action)
 	})
+	bindListSelection({ runList: execute, transaction: sessionTransaction })
 
 	const sessionStore = new FileStore(normalize(join(appDir, config.session.path)))
 	sessionDependsOn({ store: sessionStore })

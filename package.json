@@ -33,6 +33,7 @@
 		"@itrocks/lazy-loading": "latest",
 		"@itrocks/list": "latest",
 		"@itrocks/list-properties": "latest",
+		"@itrocks/list-selection": "latest",
 		"@itrocks/mysql": "latest",
 		"@itrocks/notifications": "latest",
 		"@itrocks/password": "latest",
@@ -123,5 +124,5 @@
 		"build:test": "tsc -p test/tsconfig.json",
 		"test": "npm run build && npm run build:test && node --test test/*.test.js test/*.test.mjs"
 	},
-	"version": "1.8.2"
+	"version": "1.9.0"
 }

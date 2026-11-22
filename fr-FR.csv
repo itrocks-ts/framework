@@ -7,6 +7,8 @@ $1 $2 deleted;$1 $2 supprimés
 $1 elements;$1 éléments
 $1 list;$1s
 $1 saved;$1 enregistré
+$1 selected;$1 sélectionnés
+1 selected;1 sélectionné
 an email for password reset was sent to you;un mail de réinitialisation de mot de passe vous a été envoyé
 active;actif
 add;ajouter
@@ -72,6 +74,7 @@ reset;réinitialiser
 save;enregistrer
 save $1;enregistrer $1
 search;rechercher
+select all, clear, or restore selection;tout sélectionner, désélectionner ou rétablir la sélection
 select row;sélectionner la ligne
 select rows;sélectionner les lignes
 send;envoyer
