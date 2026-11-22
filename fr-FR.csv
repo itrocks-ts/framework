@@ -73,6 +73,7 @@ save;enregistrer
 save $1;enregistrer $1
 search;rechercher
 select row;sélectionner la ligne
+select rows;sélectionner les lignes
 send;envoyer
 this is the $1 I love;c'est le $1 que j'aime
 true;vrai
