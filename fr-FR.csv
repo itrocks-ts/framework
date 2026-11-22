@@ -40,6 +40,8 @@ forgot password;mot de passe oublié
 global search;recherche globale
 home;accueil
 id;id
+insert first row;insérer une ligne en tête
+insert row after;insérer une ligne après
 lines;lignes
 login;identifiant
 log in;se connecter
