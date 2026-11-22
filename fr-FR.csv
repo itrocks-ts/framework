@@ -25,7 +25,9 @@ confirm;confirmer
 continue;continuer
 could not create this user account;impossible de créer ce compte utilisateur
 delete;supprimer
+delete 1 row;supprimer 1 ligne
 delete $1;supprimer $1
+delete $1 rows;supprimer $1 lignes
 demo objects;objets démo
 display $1;afficher $1
 do you confirm deletion;confirmez-vous la suppression
