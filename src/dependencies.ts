@@ -46,6 +46,7 @@ import { normalize }                        from 'node:path'
 
 // Load the composed Template before adapters that also import it.
 import { editComponents }                   from '@itrocks/edit-components'
+import { outputComponents }                 from '@itrocks/edit-components'
 import { bindCustomList }                   from './custom-list'
 import { configureLanguages }               from './language'
 import { bindPropertySelect }               from './property-select'
@@ -76,6 +77,7 @@ export function bind()
 		fieldNameOf:            toField,
 		formatDate:             date => format(date, tr('dd/MM/yyyy', { ucFirst: false })),
 		ignoreTransformedValue: IGNORE,
+		outputComponents,
 		parseDate:              date => parse(date, tr('dd/MM/yyyy', { ucFirst: false }), new Date),
 		propertyOutput,
 		representativeValueOf,

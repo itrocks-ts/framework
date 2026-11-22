@@ -8,9 +8,8 @@ The framework supplies adapters to consumer-owned contracts through public packa
 `formControlDependsOn(formControl)` connects the reflected HTML edit view to
 [`form-controls`](../../form-controls/README.md). The default uses the HTML edit transformer directly.
 The framework also supplies [`edit-components`](../../edit-components/docs/dependencies.md) to
-`initCoreTransformers({ editComponents })` for collections marked with `@Component()`.
-Without that renderer, component collections display their values.
-The browser entry activates the shared controls and the component tables.
+`initCoreTransformers({ editComponents, outputComponents })` for collections marked with `@Component()`.
+The browser entry styles both tables and activates the shared controls on editable rows.
 
 ## Property metadata
 
