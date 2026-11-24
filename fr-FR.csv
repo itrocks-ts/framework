@@ -9,6 +9,7 @@ $1 list;$1s
 $1 saved;$1 enregistré
 $1 selected;$1 sélectionnés
 1 selected;1 sélectionné
+active list filters;filtres actifs de la liste
 an email for password reset was sent to you;un mail de réinitialisation de mot de passe vous a été envoyé
 active;actif
 add;ajouter
@@ -17,6 +18,7 @@ add row;ajouter une ligne
 add $1;ajouter $1
 age;age
 all data will be lost;toutes les données seront perdues
+apply filters;appliquer les filtres
 authenticate user;authentifier l'utilisateur
 back;retour
 birthday;date de naissance
@@ -35,18 +37,24 @@ display $1;afficher $1
 do you confirm deletion;confirmez-vous la suppression
 edit;modifier
 edit $1;modifier $1
+edit or apply list filters;modifier ou appliquer les filtres de la liste
 email;mail
 empty;vide
 en;fr
 false;faux
 file;fichier
+filter $1;filtrer $1
 forgot password;mot de passe oublié
 global search;recherche globale
 home;accueil
 id;id
+incomplete list filter;filtre de liste incomplet
 insert first row;insérer une ligne en tête
 insert row after;insérer une ligne après
+invalid list filter;filtre de liste invalide
 lines;lignes
+list filters;filtres de la liste
+list search;recherche dans la liste
 login;identifiant
 log in;se connecter
 log out;déconnecter
@@ -81,8 +89,10 @@ send;envoyer
 this is the $1 I love;c'est le $1 que j'aime
 true;vrai
 unable to log in;impossible de se connecter
+unexpected character at position $1;caractère inattendu à la position $1
 unknown;inconnu
 unknown email, login or password;mail, identifiant ou mot de passe inconnu
+unknown list filter field: $1;champ de filtre inconnu : $1
 user;utilisateur
 user account created;compte utilisateur créé
 user login;connexion utilisateur
