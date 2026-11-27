@@ -38,11 +38,13 @@ do you confirm deletion;confirmez-vous la suppression
 edit;modifier
 edit $1;modifier $1
 edit or apply list filters;modifier ou appliquer les filtres de la liste
+edit the filter;modifier le filtre
 email;mail
 empty;vide
 en;fr
 false;faux
 file;fichier
+filter;filtrer
 filter $1;filtrer $1
 forgot password;mot de passe oublié
 global search;recherche globale
