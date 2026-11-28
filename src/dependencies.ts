@@ -132,9 +132,7 @@ export function bind()
 		const containerData = Object.assign(defaultContainerData(request), this)
 		const contained     = !request.request.headers['xhr-info'] && config.container?.file
 		const template      = new Template(data, containerData)
-
-		template.applicationPath = request.request.applicationPath.bind(request.request)
-		template.publicUrl       = request.request.publicUrl.bind(request.request)
+		template.publicUrl  = request.request.publicUrl.bind(request.request)
 		template.urlAttributes.push(
 			'data-custom-list-route', 'data-fetch', 'data-feed', 'data-href', 'data-link', 'data-route'
 		)

@@ -133,19 +133,20 @@ export async function run()
 			defaultHeader(response.headers, 'Content-Language', lang())
 			return response
 		}),
-		favicon:   config.container?.favicon ?? normalize(join(__dirname, '../favicon.png')),
-		fileSize:  config.server.fileSize,
+		favicon:          config.container?.favicon ?? normalize(join(__dirname, '../favicon.png')),
+		fileSize:         config.server.fileSize,
 		frontScripts,
-		headers:     config.server.headers,
-		host:        config.server.host,
-		manifest:    config.container?.manifest,
-		port:        config.server.port,
-		rolling:     config.session.rolling,
-		sameOrigin:  config.server.sameOrigin,
-		scriptCalls: ['loadCss', 'loadScript'],
-		secret:      config.session.secret ?? config.secret ?? ephemeralSessionSecret,
-		secure:      config.server.secure ?? 'auto',
-		store:       sessionStore
+		headers:          config.server.headers,
+		host:             config.server.host,
+		manifest:         config.container?.manifest,
+		port:             config.server.port,
+		proxyKeepsPrefix: config.server.proxyKeepsPrefix,
+		rolling:          config.session.rolling,
+		sameOrigin:       config.server.sameOrigin,
+		scriptCalls:      ['loadCss', 'loadScript'],
+		secret:           config.session.secret ?? config.secret ?? ephemeralSessionSecret,
+		secure:           config.server.secure ?? 'auto',
+		store:            sessionStore
 	})
 	server.run()
 	servers.push(server)

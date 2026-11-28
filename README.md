@@ -83,6 +83,8 @@ and the import map. Application containers must provide the same base element be
 Application browser code should use base-relative endpoints or resolve them against `document.baseURI`.
 
 For an Apache proxy, use `ProxyPass "/showtime/" "http://127.0.0.1:3456/"` and set the prefix header within that location.
+This mapping removes the prefix before forwarding. For proxies that forward the full public path, set
+`server.proxyKeepsPrefix: true`.
 
 ### Request languages
 
