@@ -2,6 +2,7 @@ import { Request }                from '@itrocks/action-request'
 import { appDir }                 from '@itrocks/app-dir'
 import { fileOf }                 from '@itrocks/class-file'
 import { trOutputOf }             from '@itrocks/class-view'
+import { config }                 from '@itrocks/config'
 import { configPath }             from '@itrocks/config'
 import { CustomList }             from '@itrocks/custom-list'
 import type { CustomListContext } from '@itrocks/custom-list'
@@ -20,7 +21,11 @@ import { relative }               from 'node:path'
 
 export function bindCustomList(): void
 {
-	setDataPath(configPath('dataPath', '../data'))
+	const path = config.dataPath
+	if ((path !== undefined) && (path !== null)) {
+		setDataPath(configPath('dataPath', path))
+	}
+
 	customListDependsOn({
 		context: customListContext,
 		state: {

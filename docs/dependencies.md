@@ -74,11 +74,11 @@ The table's `settled` callback waits for pending column writes before loading or
 Anonymous saved-list actions share the business list's configured access policy; file writes additionally enforce
 signed-in user and ownership rules in `custom-list`.
 
-[`data-path`](../../data-path/README.md) receives `configPath('dataPath', '../data')` from
-[`config`](../../config/README.md). Relative paths resolve against the declaring YAML file:
+The framework passes the configured `dataPath` to [`data-path`](../../data-path/README.md).
+Relative paths resolve against the declaring YAML file. When the setting is absent, the package supplies the default.
 
 ```yaml
-dataPath: ../data/
+dataPath: ./storage
 ```
 
 The framework loads `custom-list` translations before its own and application catalogues.

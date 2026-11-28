@@ -22,7 +22,7 @@
 		"@itrocks/config": "latest",
 		"@itrocks/core-transformers": "latest",
 		"@itrocks/custom-list": "latest",
-		"@itrocks/data-path": "latest",
+		"@itrocks/data-path": "^1.0.0",
 		"@itrocks/decorator": "latest",
 		"@itrocks/default-action-workflow": "latest",
 		"@itrocks/edit-components": "latest",
@@ -124,5 +124,5 @@
 		"build:test": "tsc -p test/tsconfig.json",
 		"test": "npm run build && npm run build:test && node --test test/*.test.js test/*.test.mjs"
 	},
-	"version": "2.0.0"
+	"version": "3.0.0"
 }

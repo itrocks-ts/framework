@@ -12,6 +12,7 @@ const { File } = require('@itrocks/class-file')
 const { Display } = require('@itrocks/class-view')
 const { config } = require('@itrocks/config')
 const { CustomList } = require('@itrocks/custom-list')
+const { dataPath, setDataPath } = require('@itrocks/data-path')
 const { listSessionChanged, listState, prepareListSession, replaceListState } = require('@itrocks/list/session-state')
 const { Request } = require('@itrocks/request-response')
 const { Route } = require('@itrocks/route')
@@ -21,6 +22,12 @@ class Movie {}
 Display('Movie')(Movie)
 File(join(appDir, 'app/movie.js'))(Movie)
 Route('/saved-movie-test')(Movie)
+
+test('binding without a configured data path keeps the data-path default', () => {
+	setDataPath()
+	bindCustomList()
+	assert.equal(dataPath(), join(appDir, 'data'))
+})
 
 test('business module namespaces retain app or package paths and drop node_modules and extensions', () => {
 	assert.equal(businessModulePath(join(appDir, 'app/movie.js')), 'app/movie')
